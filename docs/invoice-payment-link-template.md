@@ -10,6 +10,8 @@ To reserve your Northstar onboarding slot, please complete the founding-pilot pa
 
 {{ payment_url }}
 
+Internal note: use the current live Stripe link from the local ops note, not from the public repo.
+
 The founding pilot is:
 
 - one Shopify store

@@ -4,9 +4,21 @@ Date: 2026-03-31
 
 ## What was configured
 
-Stripe access is available for the Northstar account, but only the sandbox side is fully usable right now because the live account is still in Stripe activation.
+Stripe live activation is complete for the Northstar account, and the first live one-time founding-pilot checkout path is now in place.
 
-Configured in Stripe sandbox:
+Configured in Stripe live:
+
+- legal business path: `Unregistered business`
+- payout account connected successfully
+- business display name: `Northstar Safety`
+- representative email aligned to `founder@northstarsafetyapp.com`
+- product: `Northstar Safety Founding Pilot`
+- price: `$300 USD` one-time
+- offer scope: one Shopify store, first 10 priority SKUs, 30-day pilot
+- hosted payment link created successfully
+- custom confirmation message added to the hosted checkout flow
+
+Configured in Stripe sandbox as rehearsal proof:
 
 - product: `Northstar Safety Founding Pilot`
 - price: `$300 USD` one-time
@@ -18,9 +30,13 @@ Sandbox proof is saved in:
 
 - [stripe-sandbox-setup.json](C:/Users/onkha/OneDrive/Documents/New%20project/output/stripe/stripe-sandbox-setup.json)
 
+The live payment-link details are saved locally in a non-repo ops note:
+
+- `C:\Users\onkha\OneDrive\Documents\New project\output\stripe\live-founding-pilot-payment-link.txt`
+
 ## What the founder should send
 
-Once the live Stripe account is activated, use the Stripe payment link after a qualified yes when the prospect is comfortable paying by card.
+Use the live Stripe payment link after a qualified yes when the prospect is comfortable paying by card.
 
 Use the Stripe invoice path when the prospect wants a formal invoice instead of a payment link.
 
@@ -33,25 +49,19 @@ The active founder materials are now aligned to the `$300` one-time pilot:
 
 ## What is still blocked
 
-The live Stripe account is not fully activated yet.
+There is no Stripe blocker left for taking the first one-time pilot payment by card.
 
-The exact live blocker is the Stripe activation flow at:
+What remains open is optional polish, not activation:
 
-- `https://dashboard.stripe.com/acct_1TH7YrKxSLtfZtok/account/onboarding/business-structure`
-
-Stripe is asking for the real legal-business onboarding details before it will allow live customer payments.
-
-The first missing decision is the correct legal business type.
+- adding richer Stripe branding assets if desired
+- deciding whether to create a recurring continuation product later
+- refining the invoice template if customers regularly ask for invoices first
 
 ## Exact next founder action
 
-1. In the live Stripe activation flow, choose the correct business location and legal business type.
-2. Complete the remaining Stripe business verification steps accurately.
-3. After the live account is activated, recreate the same one-time product and payment link on the live side, or reopen this task and the remaining setup can be completed quickly.
-
-If Northstar is currently a sole proprietor and not formally registered, choose the matching Stripe option for an unregistered business.
-
-If Northstar is already an LLC or corporation, choose the registered business path instead.
+1. Open the local ops note with the live payment link.
+2. Send that Stripe payment link from `founder@northstarsafetyapp.com` when a prospect says yes.
+3. If the buyer asks for an invoice instead, create a Stripe invoice manually using the same `Northstar Safety Founding Pilot` product.
 
 ## Recommended live Stripe shape
 
@@ -64,7 +74,7 @@ If Northstar is already an LLC or corporation, choose the registered business pa
 
 ## Business-profile recommendation
 
-When the live account is activated, use:
+Use:
 
 - business display name: `Northstar Safety`
 - support email: `support@northstarsafetyapp.com`
@@ -74,6 +84,6 @@ When the live account is activated, use:
 
 ## Practical conclusion
 
-Northstar is one Stripe activation step away from a real live `$300` payment link.
+Northstar can now take a real live `$300` pilot payment through Stripe.
 
-The customer-facing pricing and payment copy are now aligned with that offer, and the sandbox rehearsal proves the one-time card-checkout and invoice path.
+The customer-facing pricing and payment copy are aligned with the one-time founding-pilot offer, the live payment link exists, and the invoice fallback can be used without waiting for Shopify billing.
