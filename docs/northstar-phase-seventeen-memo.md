@@ -33,12 +33,20 @@ Date: 2026-03-30
 1. In Render, create the managed PostgreSQL database.
 2. Add its internal connection string to `NORTHSTAR_DATABASE_URL`.
 3. Redeploy Northstar.
-4. Add the SMTP credentials in Render and use the settings page test-email button.
-5. Add `app.northstarsafetyapp.com` as a custom domain in Render.
-6. Create the matching DNS record at the domain provider using the Render target.
-7. Update `PUBLIC_BASE_URL` to `https://app.northstarsafetyapp.com`.
-8. Redeploy again.
-9. Keep charging by direct invoice until the Shopify Partner billing cutover is done.
+4. Enable Google 2-Step Verification for `support@northstarsafetyapp.com` if it is not already on, then create a Google app password for SMTP.
+5. Add these SMTP credentials in Render and use the settings page test-email button:
+   - `SMTP_MODE=smtp`
+   - `SMTP_HOST=smtp.gmail.com`
+   - `SMTP_PORT=587`
+   - `SMTP_USERNAME=support@northstarsafetyapp.com`
+   - `SMTP_PASSWORD=<app password>`
+   - `SMTP_FROM_EMAIL=support@northstarsafetyapp.com`
+   - `SMTP_REPLY_TO=support@northstarsafetyapp.com`
+6. Add `app.northstarsafetyapp.com` as a custom domain in Render.
+7. Create the matching DNS record at the domain provider using the Render target.
+8. Update `PUBLIC_BASE_URL` to `https://app.northstarsafetyapp.com`.
+9. Redeploy again.
+10. Keep charging by direct invoice until the Shopify Partner billing cutover is done.
 
 ## Revenue readiness
 

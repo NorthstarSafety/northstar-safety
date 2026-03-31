@@ -117,6 +117,26 @@ The same hosted check also confirms:
 - the expected Shopify store `p0ubv0-zg.myshopify.com` is visible
 - the hosted workspace is showing 2 live products
 
+## Exact Postgres and SMTP handoff
+
+Because the remaining blockers are now provider-side rather than code-side, the smallest exact handoff is:
+
+1. In Render, create a managed PostgreSQL database in the same region as the web service.
+2. Copy the Render internal database URL into `NORTHSTAR_DATABASE_URL` on the `northstar-safety` web service.
+3. Redeploy the service.
+4. If any SQLite state still matters, run `scripts/northstar_migrate_to_postgres.py` once against the old SQLite file and the new Postgres URL during the cutover.
+5. For SMTP, use Google Workspace SMTP on `support@northstarsafetyapp.com` with:
+   - `SMTP_MODE=smtp`
+   - `SMTP_HOST=smtp.gmail.com`
+   - `SMTP_PORT=587`
+   - `SMTP_USERNAME=support@northstarsafetyapp.com`
+   - `SMTP_PASSWORD=<Google app password>`
+   - `SMTP_FROM_EMAIL=support@northstarsafetyapp.com`
+   - `SMTP_REPLY_TO=support@northstarsafetyapp.com`
+6. Redeploy again and use the Settings page test-email button.
+
+If Google Workspace app-password SMTP is not available yet, the exact remaining blocker is: create an app password for `support@northstarsafetyapp.com` after enabling 2-Step Verification on that mailbox.
+
 ## Important live note
 
 The hosted Render app is now serving the newer runtime behavior with relative static asset URLs, so the production-hardening deploy has landed. The remaining Render risk is no longer the stale build. It is the fact that the live stack is still SQLite-backed and not yet on managed PostgreSQL.
