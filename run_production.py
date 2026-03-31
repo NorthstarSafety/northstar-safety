@@ -13,4 +13,6 @@ if __name__ == "__main__":
         port=settings.app_port,
         reload=False,
         server_header=False,
+        proxy_headers=True,
+        forwarded_allow_ips="*",
     )
