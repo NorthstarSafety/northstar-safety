@@ -8,6 +8,7 @@ Northstar is live on Render at:
 
 - `https://northstar-safety.onrender.com`
 - latest hosted runtime behavior now includes the relative `/static/...` asset path fix from the recent production-hardening push
+- hosted verification now also runs through the new remote-only mode in `scripts/northstar_launch_check.py`
 
 The Render service is:
 
@@ -100,6 +101,21 @@ Still not complete:
 - `app.northstarsafetyapp.com` is not attached yet
 - Shopify Billing API is still blocked by the app ownership / Partner cutover path
 - the latest deploy appears to have come up with a fresh SQLite-backed workspace state, so durable production persistence should still be treated as unresolved until PostgreSQL is live
+
+## Current scripted hosted check
+
+Using the remote-only launch check against the live Render URL with the named founder account now returns the real hosted blockers:
+
+- database: SQLite
+- smtp: blocked
+- billing: blocked because the app is still shop-owned and not yet in Shopify Partners
+
+The same hosted check also confirms:
+
+- `/`, `/login`, `/install`, `/healthz`, `/robots.txt`, and `/sitemap.xml` are all reachable
+- the hosted workspace accepts the named founder login
+- the expected Shopify store `p0ubv0-zg.myshopify.com` is visible
+- the hosted workspace is showing 2 live products
 
 ## Important live note
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
@@ -39,8 +40,116 @@ def public_host_warning(base_url: str) -> str | None:
     return None
 
 
+def _route_status(base_url: str, path: str) -> tuple[int | str, str]:
+    try:
+        response = requests.get(f"{base_url.rstrip('/')}{path}", timeout=15, allow_redirects=True)
+        return response.status_code, response.url
+    except Exception as exc:  # pragma: no cover - operator utility
+        return f"ERR: {exc}", ""
+
+
+def _login_remote(base_url: str, email: str, password: str) -> requests.Session:
+    session = requests.Session()
+    response = session.post(
+        f"{base_url.rstrip('/')}/login",
+        data={"email": email, "password": password, "next_path": "/workspace"},
+        timeout=20,
+        allow_redirects=False,
+    )
+    if response.status_code not in {302, 303}:
+        raise RuntimeError(f"Login failed with status {response.status_code}")
+    return session
+
+
+def _remote_launch_check(base_url: str) -> int:
+    print(f"Northstar launch check against {base_url}")
+    print()
+
+    blockers: list[str] = []
+    warning = public_host_warning(base_url)
+    if warning:
+        blockers.append(warning)
+
+    for path in ["/", "/login", "/install", "/billing", "/healthz", "/robots.txt", "/sitemap.xml"]:
+        status, final_url = _route_status(base_url, path)
+        print(f"{path:<14} {status} {final_url}".rstrip())
+
+    email = os.getenv("NORTHSTAR_SESSION_EMAIL", "").strip()
+    password = os.getenv("NORTHSTAR_SESSION_PASSWORD", "").strip()
+    expected_store = os.getenv("NORTHSTAR_EXPECTED_STORE", "").strip()
+
+    if not email or not password:
+        blockers.append("Remote-only launch check needs NORTHSTAR_SESSION_EMAIL and NORTHSTAR_SESSION_PASSWORD to inspect the hosted workspace.")
+    else:
+        try:
+            session = _login_remote(base_url, email, password)
+        except Exception as exc:  # pragma: no cover - operator utility
+            blockers.append(f"Hosted login failed: {exc}")
+            session = None
+
+        if session is not None:
+            settings_response = session.get(f"{base_url.rstrip('/')}/settings", timeout=20)
+            workspace_response = session.get(f"{base_url.rstrip('/')}/workspace", timeout=20)
+            print()
+            print("Hosted workspace verification")
+            print(f"/settings       {settings_response.status_code}")
+            print(f"/workspace      {workspace_response.status_code}")
+
+            settings_html = settings_response.text
+            workspace_html = workspace_response.text
+
+            if expected_store:
+                store_ready = expected_store in settings_html or expected_store in workspace_html
+                print(f"store_domain    {'ready' if store_ready else 'blocked'} | {expected_store}")
+                if not store_ready:
+                    blockers.append(f"Expected store domain {expected_store} is not visible in the hosted workspace.")
+
+            sqlite_active = "SQLite is still active" in settings_html
+            smtp_missing = "SMTP is not configured" in settings_html
+            no_named_users = "No named operator accounts yet." in settings_html
+            live_products = re.search(r"(\d+)\s+live products", settings_html, re.I)
+            live_products_count = int(live_products.group(1)) if live_products else 0
+
+            print(f"database        {'sqlite' if sqlite_active else 'not flagged as sqlite'}")
+            print(f"smtp            {'blocked' if smtp_missing else 'not flagged as missing'}")
+            print(f"named_users     {'blocked' if no_named_users else 'ready'}")
+            print(f"live_products   {live_products_count}")
+
+            if sqlite_active:
+                blockers.append("Database is still SQLite. Set NORTHSTAR_DATABASE_URL to PostgreSQL before the first paid pilot.")
+            if smtp_missing:
+                blockers.append("SMTP is not configured for real delivery.")
+            if no_named_users:
+                blockers.append("No named workspace user exists yet.")
+            if live_products_count == 0:
+                blockers.append("Hosted workspace is not showing live Shopify products yet.")
+
+            billing_response = session.post(f"{base_url.rstrip('/')}/billing/start", timeout=30, allow_redirects=True)
+            billing_text = billing_response.text.lower()
+            print()
+            print("Hosted billing verification")
+            print(f"/billing/start  {billing_response.status_code} {billing_response.url}")
+            if "shop-owned" in billing_text and "partners" in billing_text:
+                blockers.append("Billing is blocked because the current Shopify app is still shop-owned.")
+            elif billing_response.status_code >= 400:
+                blockers.append(f"Hosted billing start failed with status {billing_response.status_code}.")
+
+    print()
+    if blockers:
+        print("Blockers")
+        for blocker in blockers:
+            print(f"- {blocker}")
+        return 1
+
+    print("No launch blockers detected by the hosted checks.")
+    return 0
+
+
 def main() -> int:
     base_url = os.getenv("NORTHSTAR_BASE_URL", os.getenv("PUBLIC_BASE_URL", "http://127.0.0.1:8000"))
+    remote_only = os.getenv("NORTHSTAR_REMOTE_ONLY", "").strip().lower() in {"1", "true", "yes", "on"}
+    if remote_only:
+        return _remote_launch_check(base_url)
     print(f"Northstar launch check against {base_url}")
     print()
 
