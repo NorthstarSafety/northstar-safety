@@ -7,6 +7,7 @@ Date: 2026-03-30
 Northstar is live on Render at:
 
 - `https://northstar-safety.onrender.com`
+- latest hosted runtime behavior now includes the relative `/static/...` asset path fix from the recent production-hardening push
 
 The Render service is:
 
@@ -37,13 +38,17 @@ Hosted workflow proof:
 - updated the live workspace settings at `/settings`
 - set the connected Shopify store domain to `p0ubv0-zg.myshopify.com`
 - confirmed the hosted workspace now shows the connected live store target
+- restored the hosted workspace back to `Shopify live` mode after the latest deploy came up on a fresh SQLite-backed settings state
 - ran a hosted catalog sync successfully
 - Northstar reported: `Synced 2 products from My Store.`
+- re-ran official alert ingestion successfully from the hosted workspace
+- Northstar reported: `Live CPSC recalls ingested and re-matched against the catalog. | Live Health Canada recalls ingested and re-matched against the catalog.`
 - the hosted workspace now shows live Shopify products, live alerts, and an open case view
 - created the first live named workspace user for the founder
 - verified live sign-in to the hosted workspace using the named user session
 - added an attributed case timeline event in the hosted workspace as the named founder user
 - downloaded a live hosted case summary proof artifact to `output/hosted-customer-proof/hosted-case-summary-case-223e4f33a6.txt`
+- downloaded a second hosted case summary after the latest deploy verification to `output/hosted-customer-proof/hosted-case-summary-case-0934551fbb-rerun.txt`
 
 ## What was configured in Render
 
@@ -94,20 +99,16 @@ Still not complete:
 - SMTP delivery is still not configured
 - `app.northstarsafetyapp.com` is not attached yet
 - Shopify Billing API is still blocked by the app ownership / Partner cutover path
+- the latest deploy appears to have come up with a fresh SQLite-backed workspace state, so durable production persistence should still be treated as unresolved until PostgreSQL is live
 
 ## Important live note
 
-After the first deploy succeeded, a Render-safe polish fix was pushed to `main` in commit `f894c2f`:
-
-- enables proxy headers in `run_production.py`
-- switches template static assets to relative `/static/...` paths
-
-That change is in GitHub now, but the Render service was still serving the older build at the time of this memo. The hosted app is already usable, but one more deploy should pull in the clean static-asset URL behavior.
+The hosted Render app is now serving the newer runtime behavior with relative static asset URLs, so the production-hardening deploy has landed. The remaining Render risk is no longer the stale build. It is the fact that the live stack is still SQLite-backed and not yet on managed PostgreSQL.
 
 ## Exact next founder actions
 
-1. In Render, trigger a deploy of the latest commit (`022253c`) for `northstar-safety`.
-2. Create a managed PostgreSQL database and set `NORTHSTAR_DATABASE_URL`.
+1. Create a managed PostgreSQL database and set `NORTHSTAR_DATABASE_URL`.
+2. If any SQLite state still matters, run `scripts/northstar_migrate_to_postgres.py` during the cutover.
 3. Add SMTP credentials:
    - `SMTP_HOST`
    - `SMTP_USERNAME`
@@ -116,7 +117,8 @@ That change is in GitHub now, but the Render service was still serving the older
 4. Sign in with the live named workspace user and confirm the password is stored safely in the local operator handoff.
 5. Add `app.northstarsafetyapp.com` to the Render service and then update DNS.
 6. After the custom domain is live, update `PUBLIC_BASE_URL`.
-7. Keep first-pilot revenue on direct invoice until the Shopify Partner billing cutover is complete.
+7. Move the Shopify app into Partners before using `/billing/start`, because the live blocker is: `This Shopify app is still shop-owned. Move it into the Shopify Partners area before Northstar can use the Billing API.`
+8. Keep first-pilot revenue on direct invoice until the Shopify Partner billing cutover is complete.
 
 ## Practical revenue state
 
