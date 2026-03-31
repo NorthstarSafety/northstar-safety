@@ -40,6 +40,10 @@ Hosted workflow proof:
 - ran a hosted catalog sync successfully
 - Northstar reported: `Synced 2 products from My Store.`
 - the hosted workspace now shows live Shopify products, live alerts, and an open case view
+- created the first live named workspace user for the founder
+- verified live sign-in to the hosted workspace using the named user session
+- added an attributed case timeline event in the hosted workspace as the named founder user
+- downloaded a live hosted case summary proof artifact to `output/hosted-customer-proof/hosted-case-summary-case-223e4f33a6.txt`
 
 ## What was configured in Render
 
@@ -90,7 +94,6 @@ Still not complete:
 - SMTP delivery is still not configured
 - `app.northstarsafetyapp.com` is not attached yet
 - Shopify Billing API is still blocked by the app ownership / Partner cutover path
-- no named workspace user has been created yet
 
 ## Important live note
 
@@ -103,14 +106,14 @@ That change is in GitHub now, but the Render service was still serving the older
 
 ## Exact next founder actions
 
-1. In Render, trigger a deploy of the latest commit (`f894c2f`) for `northstar-safety`.
+1. In Render, trigger a deploy of the latest commit (`022253c`) for `northstar-safety`.
 2. Create a managed PostgreSQL database and set `NORTHSTAR_DATABASE_URL`.
 3. Add SMTP credentials:
    - `SMTP_HOST`
    - `SMTP_USERNAME`
    - `SMTP_PASSWORD`
    - `SMTP_FROM_EMAIL`
-4. Create the first named workspace user in `https://northstar-safety.onrender.com/settings`.
+4. Sign in with the live named workspace user and confirm the password is stored safely in the local operator handoff.
 5. Add `app.northstarsafetyapp.com` to the Render service and then update DNS.
 6. After the custom domain is live, update `PUBLIC_BASE_URL`.
 7. Keep first-pilot revenue on direct invoice until the Shopify Partner billing cutover is complete.
