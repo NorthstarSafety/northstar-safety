@@ -2,31 +2,48 @@
 
 Date: 2026-03-30
 
-## What was completed
+## What is live now
 
-- Opened the live Render new-service flow against the repo `NorthstarSafety/northstar-safety`
-- Confirmed Render detected the repo as a Docker service on branch `main`
-- Configured the service name as `northstar-safety`
-- Imported the current Northstar production env set into Render
-- Expanded the advanced section and configured:
-  - persistent disk mount path: `/data`
-  - persistent disk size: `1 GB`
-  - health check path: `/healthz`
-  - Docker build context directory: `.`
-  - Dockerfile path: `./Dockerfile`
-- Cleared the remaining invalid environment-row state so the Render form would submit cleanly
+Northstar is live on Render at:
 
-## Render blocker reached
+- `https://northstar-safety.onrender.com`
 
-Render accepted the form and then opened the **Add Card** billing modal before it would create the service.
+The Render service is:
 
-That is the current hard blocker.
+- service name: `northstar-safety`
+- type: Docker web service
+- plan: `Starter`
+- repo: `NorthstarSafety/northstar-safety`
+- branch: `main`
+- disk mount: `/data`
+- disk size: `1 GB`
+- health check path: `/healthz`
+- build context: `.`
+- Dockerfile path: `./Dockerfile`
 
-The deploy is not failing because of Northstar code or Render form validation anymore.
+## What was verified live
 
-## Env vars filled in Render
+Hosted route checks:
 
-Filled:
+- `/` -> `200`
+- `/install` -> `200`
+- `/billing` -> `200`
+- `/healthz` -> `200`
+- `/robots.txt` -> `200`
+- `/sitemap.xml` -> `200`
+
+Hosted workflow proof:
+
+- updated the live workspace settings at `/settings`
+- set the connected Shopify store domain to `p0ubv0-zg.myshopify.com`
+- confirmed the hosted workspace now shows the connected live store target
+- ran a hosted catalog sync successfully
+- Northstar reported: `Synced 2 products from My Store.`
+- the hosted workspace now shows live Shopify products, live alerts, and an open case view
+
+## What was configured in Render
+
+Configured in the Render service:
 
 - `APP_NAME`
 - `APP_ENV`
@@ -61,43 +78,43 @@ Filled:
 - `SHOPIFY_CLIENT_SECRET`
 - `NORTHSTAR_LAUNCH_CHANNEL`
 
-Still blocked or not yet available:
+Configured in the hosted Northstar workspace:
 
-- `NORTHSTAR_DATABASE_URL`
-- `SMTP_HOST`
-- `SMTP_USERNAME`
-- `SMTP_PASSWORD`
-- permanent custom domain value for `PUBLIC_BASE_URL`
+- `shopify_store_domain = p0ubv0-zg.myshopify.com`
 
-## What is not live yet
+## What is still blocked or incomplete
 
-- No Render service URL yet, because the service has not been created past the billing gate
-- No managed PostgreSQL database yet, because the Render resource creation has not completed
-- No hosted route verification yet, because the app has not reached a live Render URL
-- No DNS change yet for `app.northstarsafetyapp.com`
+Still not complete:
 
-## Exact next founder click
+- Render PostgreSQL is not provisioned or wired yet, so this deploy is still running on SQLite-on-disk rather than `NORTHSTAR_DATABASE_URL`
+- SMTP delivery is still not configured
+- `app.northstarsafetyapp.com` is not attached yet
+- Shopify Billing API is still blocked by the app ownership / Partner cutover path
+- no named workspace user has been created yet
 
-1. In the open Render **Add Card** modal, complete the billing-card form and submit it.
-2. Let Render finish creating the `northstar-safety` service.
-3. Copy the generated `onrender.com` URL.
-4. Run the hosted launch check:
+## Important live note
 
-```powershell
-$env:NORTHSTAR_BASE_URL="https://YOUR-RENDER-URL"
-.\.venv\Scripts\python.exe scripts\northstar_launch_check.py
-```
+After the first deploy succeeded, a Render-safe polish fix was pushed to `main` in commit `f894c2f`:
 
-5. Verify:
-   - `/`
-   - `/install`
-   - `/billing`
-   - `/healthz`
-   - `/robots.txt`
-   - `/sitemap.xml`
-6. If Render provisions PostgreSQL separately instead of wiring it automatically in this manual flow, create the managed database and set `NORTHSTAR_DATABASE_URL`.
-7. Only after the temporary Render URL works, add `app.northstarsafetyapp.com` and update `PUBLIC_BASE_URL`.
+- enables proxy headers in `run_production.py`
+- switches template static assets to relative `/static/...` paths
 
-## Practical note
+That change is in GitHub now, but the Render service was still serving the older build at the time of this memo. The hosted app is already usable, but one more deploy should pull in the clean static-asset URL behavior.
 
-The live Render Blueprint route appeared unstable in the current dashboard session, so this setup was driven through Render's standard manual web-service flow using the same repo and deployment assumptions. That got the setup all the way to the billing gate without changing the Northstar deployment shape.
+## Exact next founder actions
+
+1. In Render, trigger a deploy of the latest commit (`f894c2f`) for `northstar-safety`.
+2. Create a managed PostgreSQL database and set `NORTHSTAR_DATABASE_URL`.
+3. Add SMTP credentials:
+   - `SMTP_HOST`
+   - `SMTP_USERNAME`
+   - `SMTP_PASSWORD`
+   - `SMTP_FROM_EMAIL`
+4. Create the first named workspace user in `https://northstar-safety.onrender.com/settings`.
+5. Add `app.northstarsafetyapp.com` to the Render service and then update DNS.
+6. After the custom domain is live, update `PUBLIC_BASE_URL`.
+7. Keep first-pilot revenue on direct invoice until the Shopify Partner billing cutover is complete.
+
+## Practical revenue state
+
+Northstar is now live enough to support direct pilot demos and private paid-pilot onboarding on the Render URL, with the biggest remaining production risk being the SQLite-to-PostgreSQL cutover rather than the web deployment itself.
