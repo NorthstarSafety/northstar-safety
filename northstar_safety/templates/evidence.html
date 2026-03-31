@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block page_heading %}Proof and documents{% endblock %}
+{% block content %}
+<section class="guide-callout">
+  <p class="eyebrow">What this page means</p>
+  <h3>This is the work queue for missing or aging proof.</h3>
+  <p class="small muted">Missing means no document is attached. Stale means a document needs refresh. Review means a document is present but still needs operator confirmation.</p>
+</section>
+<section class="panel">
+  <div class="panel-head">
+    <div>
+      <p class="eyebrow">Evidence queue</p>
+      <h3>Missing, stale, and review-needed items</h3>
+    </div>
+    <div class="filters">
+      {% if reminder_snapshot.product_count %}
+      <a class="button ghost" href="/evidence/reminder-draft.txt">Download reminder draft</a>
+      {% endif %}
+      <a class="button {% if not selected_status %}ghost{% endif %}" href="/evidence">All</a>
+      <a class="button {% if selected_status != 'missing' %}ghost{% endif %}" href="/evidence?status=missing">Missing</a>
+      <a class="button {% if selected_status != 'stale' %}ghost{% endif %}" href="/evidence?status=stale">Stale</a>
+      <a class="button {% if selected_status != 'review' %}ghost{% endif %}" href="/evidence?status=review">Review</a>
+    </div>
+  </div>
+  {% if reminder_snapshot.product_count %}
+  <p class="small muted" style="margin: 0 0 18px 0;">{{ reminder_snapshot.item_count }} follow-up items across {{ reminder_snapshot.product_count }} products are ready for a reminder draft.</p>
+  {% endif %}
+  <div class="table-shell">
+    {% if evidence_rows %}
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>What is needed</th>
+          <th>Status</th>
+          <th>Document</th>
+          <th>Classification</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in evidence_rows %}
+        <tr>
+          <td><a href="/products/{{ item.product_id }}">{{ item.product_title }}</a></td>
+          <td>
+            <strong>{{ item.title }}</strong>
+            <div class="small muted">{{ item.description }}</div>
+          </td>
+          <td><span class="badge {{ item.status_tone }}">{{ item.status_label }}</span></td>
+          <td>{{ item.document_title or 'No document attached' }}</td>
+          <td>{{ item.classification_label }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty">
+      {% if workspace_settings.get('catalog_mode') == 'shopify' %}
+      Evidence items will appear once at least one live product is synced from Shopify.
+      {% else %}
+      No evidence items matched this filter.
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

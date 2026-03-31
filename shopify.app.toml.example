@@ -1,0 +1,25 @@
+client_id = "replace-me"
+name = "Northstar Safety"
+handle = "northstar-safety"
+application_url = "https://app.northstarsafetyapp.com/app"
+embedded = false
+
+[access_scopes]
+scopes = "read_products"
+
+[auth]
+redirect_urls = [
+  "https://app.northstarsafetyapp.com/auth/callback",
+  "https://app.northstarsafetyapp.com/auth/shopify/callback",
+]
+
+[webhooks]
+api_version = "2025-10"
+
+[[webhooks.subscriptions]]
+compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
+uri = "https://app.northstarsafetyapp.com/webhooks/shopify/compliance"
+
+[[webhooks.subscriptions]]
+topics = ["app/uninstalled"]
+uri = "https://app.northstarsafetyapp.com/webhooks/shopify/app-uninstalled"

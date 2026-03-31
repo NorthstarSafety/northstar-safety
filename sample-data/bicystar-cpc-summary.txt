@@ -1,0 +1,15 @@
+Northstar Safety pilot evidence
+Document: Children's Product Certificate summary
+Brand: Bicystar
+Product: Bicystar Convertible High Chair
+SKU: BIC-HC-001
+Jurisdictions: United States, Canada
+
+Summary
+- Product family reviewed as a durable infant/toddler high chair.
+- Certificate packet received from supplier for pilot evidence tracking.
+- Linked for demo purposes to show CPC coverage on the live Shopify SKU.
+
+Pilot note
+- This file is a placeholder artifact for the design-partner pilot workspace.
+- Replace with the merchant's current certificate packet before real production use.

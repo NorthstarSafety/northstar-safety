@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+{% block page_heading %}Safety control tower{% endblock %}
+{% block content %}
+<section class="guide-callout">
+  <p class="eyebrow">Start here</p>
+  <h3>Use this page as your monthly control panel.</h3>
+  <p class="small muted">Northstar shows what changed since the last sync, where proof is missing, which official notices need review, and which investigations still need a decision.</p>
+</section>
+<section class="hero">
+  <p class="eyebrow">{% if settings.get('catalog_mode', 'demo') == 'shopify' %}Single-store live pilot{% else %}Founder demo workspace{% endif %}</p>
+  <h3>Every child-product SKU, evidence gap, and active recall signal in one place.</h3>
+  <p>
+    {% if settings.get('catalog_mode', 'demo') == 'shopify' and counts.products == 0 %}
+    Northstar is connected to the live Shopify store, but Shopify is currently returning zero products. Add a test product in Shopify and run sync again to populate the evidence and triage workflow.
+    {% elif settings.get('catalog_mode', 'demo') == 'shopify' %}
+    This live pilot covers the monthly workflow from catalog sync to investigation log for a real Shopify store selling child products in the United States and Canada.
+    {% else %}
+    This prototype covers the monthly workflow from catalog sync to investigation log for US and Canada child-product sellers. It is seeded with realistic products, missing proof, and realistic alert matches.
+    {% endif %}
+  </p>
+  <div class="pill-row">
+    <span class="pill">{{ settings.get('merchant_name', 'Northstar Kids Co.') }}</span>
+    <span class="pill">{{ settings.get('jurisdictions', 'United States, Canada') }}</span>
+    <span class="pill">Catalog mode: {{ settings.get('catalog_mode', 'demo') }}</span>
+  </div>
+  {% if next_step %}
+  <div class="timeline" style="margin-top: 18px;">
+    <div class="timeline-item" style="background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.18);">
+      <div class="small" style="opacity: 0.85;">Recommended next step</div>
+      <strong>{{ next_step.title }}</strong>
+      <p class="small" style="margin-top: 8px;">{{ next_step.description }}</p>
+      <div class="button-row" style="margin-top: 12px;">
+        <a class="button ghost" href="{{ next_step.href }}" {% if next_step.href.startswith('/static/') %}download{% endif %}>{{ next_step.cta }}</a>
+        {% if settings.get('catalog_mode', 'demo') == 'shopify' %}
+        <form method="post" action="/actions/sync-catalog">
+          <button type="submit">Run live sync</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</section>
+
+<section class="grid-4">
+  <article class="metric-card">
+    <p class="eyebrow">Catalog</p>
+    <strong>{{ counts.products }}</strong>
+    <p class="muted">{% if settings.get('catalog_mode', 'demo') == 'shopify' %}Live Shopify products currently in scope.{% else %}Seeded Shopify-like products in scope.{% endif %}</p>
+  </article>
+  <article class="metric-card">
+    <p class="eyebrow">Missing evidence</p>
+    <strong>{{ counts.missing_evidence }}</strong>
+    <p class="muted">Requirements without a document attached.</p>
+  </article>
+  <article class="metric-card">
+    <p class="eyebrow">Open cases</p>
+    <strong>{{ counts.open_cases }}</strong>
+    <p class="muted">Alert-product investigations still active.</p>
+  </article>
+  <article class="metric-card">
+    <p class="eyebrow">Critical alerts</p>
+    <strong>{{ counts.critical_alerts }}</strong>
+    <p class="muted">High-severity signals to resolve first.</p>
+  </article>
+</section>
+
+<section class="split" style="margin-top: 18px;">
+  <div class="stack">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Pilot checklist</p>
+          <h3>First-value path for the merchant pilot</h3>
+        </div>
+      </div>
+      <div class="timeline">
+        {% for item in pilot_checklist %}
+        <div class="timeline-item">
+          <div class="pill-row" style="margin-top: 0; margin-bottom: 8px;">
+            <span class="badge {% if item.completed %}success{% else %}neutral{% endif %}">{% if item.completed %}Done{% else %}Next{% endif %}</span>
+          </div>
+          <strong>{{ item.title }}</strong>
+          <p class="small" style="margin-top: 8px;">{{ item.description }}</p>
+          <a class="button ghost small" style="margin-top: 10px;" href="{{ item.href }}" {% if item.href.startswith('/static/') %}download{% endif %}>{{ item.cta }}</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Recent cases</p>
+          <h3>Where operators are spending time</h3>
+        </div>
+        <a class="button ghost" href="/cases">View all cases</a>
+      </div>
+      {% if recent_cases %}
+      <div class="table-shell">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Alert</th>
+              <th>Status</th>
+              <th>Priority</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for case in recent_cases %}
+            <tr>
+              <td><a href="/cases/{{ case.id }}">{{ case.product_title }}</a></td>
+              <td>{{ case.alert_title }}</td>
+              <td><span class="badge {{ case.triage_status_tone }}">{{ case.triage_status_label }}</span></td>
+              <td>{{ case.priority|capitalize }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty">{% if settings.get('catalog_mode', 'demo') == 'shopify' and counts.products == 0 %}No cases yet because the connected store has no synced products.{% else %}No active cases yet.{% endif %}</div>
+      {% endif %}
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Stale evidence</p>
+          <h3>Documents nearing or past review</h3>
+        </div>
+        <a class="button ghost" href="/evidence?status=stale">Open stale queue</a>
+      </div>
+      {% if stale_items %}
+      <div class="table-shell">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Requirement</th>
+              <th>Status</th>
+              <th>Document</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in stale_items %}
+            <tr>
+              <td><a href="/products/{{ item.product_id }}">{{ item.product_title }}</a></td>
+              <td>{{ item.title }}</td>
+              <td><span class="badge {{ item.status_tone }}">{{ item.status_label }}</span></td>
+              <td>{{ item.document_title or 'None linked' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty">No stale evidence items right now.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Action queue</p>
+          <h3>Missing evidence</h3>
+        </div>
+        <a class="button ghost" href="/evidence?status=missing">Open evidence queue</a>
+      </div>
+      {% if missing_items %}
+      <div class="timeline">
+        {% for item in missing_items %}
+        <div class="timeline-item">
+          <div class="small muted">{{ item.product_title }}</div>
+          <strong>{{ item.title }}</strong>
+          <p class="small">{{ item.description }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty">{% if settings.get('catalog_mode', 'demo') == 'shopify' and counts.products == 0 %}Evidence checklists will appear after the first live product sync.{% else %}Every required item has a document attached.{% endif %}</div>
+      {% endif %}
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Signal feed</p>
+          <h3>Latest alerts</h3>
+        </div>
+        <a class="button ghost" href="/alerts">View all alerts</a>
+      </div>
+      <div class="timeline">
+        {% for alert in recent_alerts %}
+        <div class="timeline-item">
+          <div class="small muted">{{ alert.source_name }} | {{ alert.alert_date[:10] }}</div>
+          <a href="/alerts/{{ alert.id }}"><strong>{{ alert.title }}</strong></a>
+          <div class="pill-row">
+            <span class="badge {{ alert.severity_tone }}">{{ alert.severity_label }}</span>
+            <span class="badge neutral">{{ alert.match_count }} matches</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Automatic refreshes</p>
+          <h3>What Northstar will keep fresh</h3>
+        </div>
+        <a class="button ghost" href="/settings">Open settings</a>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="small muted">Catalog refresh</div>
+          <strong>{% if automation.catalog_sync.enabled %}{% if automation.catalog_sync.ready %}Enabled{% else %}Enabled but blocked{% endif %}{% else %}Off{% endif %}</strong>
+          <p class="small" style="margin-top: 8px;">
+            Every {{ automation.catalog_sync.interval_hours }} hours.
+            {% if automation.catalog_sync.last_run %}Last completed {{ automation.catalog_sync.last_run.completed_at[:19] if automation.catalog_sync.last_run.completed_at else automation.catalog_sync.last_run.started_at[:19] }}.{% else %}No automatic live catalog refresh recorded yet.{% endif %}
+          </p>
+        </div>
+        <div class="timeline-item">
+          <div class="small muted">Alert refresh</div>
+          <strong>{% if automation.alert_ingest.enabled %}{% if automation.alert_ingest.ready %}Enabled{% else %}Enabled but blocked{% endif %}{% else %}Off{% endif %}</strong>
+          <p class="small" style="margin-top: 8px;">
+            {{ automation.alert_ingest.sources_label }} every {{ automation.alert_ingest.interval_hours }} hours.
+            {% if automation.alert_ingest.last_run %}Last completed {{ automation.alert_ingest.last_run.completed_at[:19] if automation.alert_ingest.last_run.completed_at else automation.alert_ingest.last_run.started_at[:19] }}.{% else %}No automatic alert refresh recorded yet.{% endif %}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Reminder queue</p>
+          <h3>Evidence follow-up to send next</h3>
+        </div>
+        <a class="button ghost" href="/evidence/reminder-draft.txt">Download reminder draft</a>
+      </div>
+      {% if evidence_reminders.products %}
+      <div class="timeline">
+        {% for item in evidence_reminders.products %}
+        <div class="timeline-item">
+          <div class="small muted">{{ item.vendor or 'Unknown vendor' }}</div>
+          <strong>{{ item.product_title }}</strong>
+          <p class="small">{{ item.missing_count }} missing | {{ item.stale_count }} stale</p>
+          {% if item.requirement_preview %}
+          <p class="small muted" style="margin-top: 8px;">{{ item.requirement_preview }}</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty">No reminder draft is needed right now.</div>
+      {% endif %}
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Admin trail</p>
+          <h3>Recent sync runs</h3>
+        </div>
+        <form method="post" action="/actions/reset-demo">
+          <button class="button ghost" type="submit">Reset demo workspace</button>
+        </form>
+      </div>
+      <div class="timeline">
+        {% for run in sync_runs %}
+        <div class="timeline-item">
+          <div class="small muted">{{ run.source_name }} | {{ run.run_type }}</div>
+          <strong>{{ run.status|capitalize }}</strong>
+          <p class="small">{{ run.notes }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

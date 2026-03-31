@@ -1,0 +1,16 @@
+[Unit]
+Description=Northstar Safety
+After=network.target
+
+[Service]
+Type=simple
+User=northstar
+Group=northstar
+WorkingDirectory=/srv/northstar-safety
+EnvironmentFile=/srv/northstar-safety/.env
+ExecStart=/srv/northstar-safety/.venv/bin/python run_production.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

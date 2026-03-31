@@ -1,0 +1,42 @@
+{% extends "public_base.html" %}
+{% block content %}
+<section class="page-hero">
+  <p class="eyebrow">Pricing</p>
+  <h1>Private pilot pricing</h1>
+  <p class="lede">Northstar is currently sold as a founder-led private pilot for one Shopify store selling child products.</p>
+</section>
+
+<section class="pricing-grid">
+  <article class="pricing-card primary">
+    <p class="eyebrow">Founding pilot</p>
+    <h2>$750 for 45 days</h2>
+    <p class="price-subline">then $249 per month if you keep Northstar on one live store</p>
+    <ul class="feature-list">
+      <li>One Shopify store connection</li>
+      <li>Up to 25 priority SKUs actively configured</li>
+      <li>Evidence checklist generation</li>
+      <li>Official alert ingest and review workflow</li>
+      <li>Case and action trail</li>
+      <li>Founder-led kickoff and one follow-up working session</li>
+    </ul>
+    <div class="button-row">
+      <a class="button" href="{{ app_install_url }}">Start install</a>
+      <a class="button ghost" href="{{ demo_link }}">Request a walkthrough</a>
+      <a class="button ghost" href="/contact">Ask about fit</a>
+    </div>
+  </article>
+  <article class="pricing-card">
+    <p class="eyebrow">Best fit</p>
+    <h3>Who this pilot is for</h3>
+    <ul class="feature-list">
+      <li>Shopify merchants with child-product catalogs</li>
+      <li>10 to 150 active SKUs</li>
+      <li>Lean founder, ops, or quality teams</li>
+      <li>Evidence exists but is scattered</li>
+      <li>Recall review is still manual</li>
+    </ul>
+    <p class="small muted">Northstar is not legal counsel, a lab, or an outsourced supplier-chasing service.</p>
+    <p class="small muted" style="margin-top: 12px;">Private pilots can be invoiced directly now, then moved into Shopify-native billing once the Partner-managed production app is fully live.</p>
+  </article>
+</section>
+{% endblock %}

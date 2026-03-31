@@ -1,0 +1,63 @@
+{% extends "public_base.html" %}
+{% block content %}
+<section class="page-hero">
+  <p class="eyebrow">Platform</p>
+  <h1>The workflow Northstar owns every month</h1>
+  <p class="lede">Northstar is intentionally narrow. It gives the merchant one operating layer between Shopify, product evidence, official alerts, and the internal decision trail.</p>
+</section>
+
+<section class="public-grid public-grid-2">
+  <article class="feature-card">
+    <p class="eyebrow">Catalog</p>
+    <h3>Shopify products become product workspaces</h3>
+    <p>Northstar pulls real product and variant records into a view the operator can actually use. That means product titles, SKUs, variants, supplier context, and jurisdiction notes stay attached to the same record.</p>
+  </article>
+  <article class="feature-card">
+    <p class="eyebrow">Evidence</p>
+    <h3>Current, missing, or needs review</h3>
+    <p>Each product gets a plain-language checklist so a merchant can quickly see whether a document is on file, stale, or still missing.</p>
+  </article>
+  <article class="feature-card">
+    <p class="eyebrow">Alerts</p>
+    <h3>Official notices with practical match review</h3>
+    <p>Northstar ingests official safety or recall signals and links them to likely catalog products with a confidence score and human-readable rationale.</p>
+  </article>
+  <article class="feature-card">
+    <p class="eyebrow">Cases</p>
+    <h3>Investigations stay explainable</h3>
+    <p>When a product-alert pair matters, Northstar stores the owner, decision, notes, source links, and action trail in one investigation record.</p>
+  </article>
+</section>
+
+<section class="public-section">
+  <div class="section-heading">
+    <p class="eyebrow">What the operator sees</p>
+    <h2>Labels and next steps written for normal people</h2>
+  </div>
+  <div class="public-grid public-grid-3">
+    <article class="trust-card">
+      <strong>Readiness score</strong>
+      <p class="small muted">A simple way to show how much of a product's required evidence is current right now.</p>
+    </article>
+    <article class="trust-card">
+      <strong>Possible match</strong>
+      <p class="small muted">A product-alert overlap that still needs a human to confirm or dismiss.</p>
+    </article>
+    <article class="trust-card">
+      <strong>Investigation</strong>
+      <p class="small muted">The case record that holds the written internal trail once a match matters enough to act on.</p>
+    </article>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div>
+    <p class="eyebrow">See the live pilot</p>
+    <h2>Northstar already runs as a real single-store pilot.</h2>
+  </div>
+  <div class="button-row">
+    <a class="button" href="{{ demo_link }}">Request a walkthrough</a>
+    <a class="button ghost" href="/shopify">View Shopify readiness</a>
+  </div>
+</section>
+{% endblock %}

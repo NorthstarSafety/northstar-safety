@@ -1,0 +1,10 @@
+Flask==3.1.2
+fastapi==0.118.0
+uvicorn==0.37.0
+jinja2==3.1.6
+python-multipart==0.0.20
+waitress==3.0.2
+psycopg[binary]==3.2.10
+stripe==12.4.0
+boto3==1.39.15
+requests==2.32.5

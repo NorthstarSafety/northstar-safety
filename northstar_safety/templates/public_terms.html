@@ -1,0 +1,29 @@
+{% extends "public_base.html" %}
+{% block content %}
+<section class="legal-shell">
+  <p class="eyebrow">Terms of service</p>
+  <h1>{{ company_name }} terms</h1>
+  <p class="small muted">Last updated: 2026-03-23</p>
+
+  <h2>Scope</h2>
+  <p>{{ company_name }} currently offers a private pilot workflow for Shopify merchants selling child products. Access and use are limited to approved pilot participants and authorized team members.</p>
+
+  <h2>What Northstar is</h2>
+  <p>Northstar is a software workflow for catalog sync, product evidence tracking, official alert review, and internal action logging.</p>
+
+  <h2>What Northstar is not</h2>
+  <p>Northstar is not legal advice, not a testing lab, and not a guarantee of regulatory compliance. Merchants remain responsible for their own regulatory decisions, filings, and supplier management.</p>
+
+  <h2>Pilot use</h2>
+  <p>Pilot access is limited to the agreed store, users, and scope. The pilot may change as Northstar learns from real operator use.</p>
+
+  <h2>Acceptable use</h2>
+  <p>You may not misuse the service, interfere with its operation, or attempt to access merchant data that you are not authorized to handle.</p>
+
+  <h2>Support and changes</h2>
+  <p>Northstar may update the product, policies, and pilot materials as the software matures. Material changes will be communicated through the pilot support channel.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about these terms can be sent to <a href="mailto:{{ support_email }}">{{ support_email }}</a>.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% if shopify_api_key %}
+  <meta name="shopify-api-key" content="{{ shopify_api_key }}">
+  <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
+  {% endif %}
+  <title>{{ app_name }} | Shopify app home</title>
+  <link rel="stylesheet" href="{{ request.url_for('static', path='styles.css') }}">
+</head>
+<body class="public-body">
+  <div class="public-shell" style="max-width: 980px;">
+    {% if flash %}
+    <div class="flash {{ flash.level }}" role="status">{{ flash.message }}</div>
+    {% endif %}
+
+    <main class="public-main">
+      <section class="page-hero">
+        <p class="eyebrow">Shopify app home</p>
+        <h1>Northstar is connected to the safety workspace</h1>
+        <p class="lede">This is the thin admin-facing entry point for Shopify. Northstar's full operating workflow still lives in the external workspace, which is where operators manage evidence, alerts, and investigations.</p>
+      </section>
+
+      <section class="public-grid public-grid-3">
+        <article class="feature-card">
+          <p class="eyebrow">Catalog</p>
+          <h3>{{ counts.products }} products in scope</h3>
+          <p>Use the external workspace when you need the full SKU, evidence, alert, and case view.</p>
+        </article>
+        <article class="feature-card">
+          <p class="eyebrow">Evidence</p>
+          <h3>{{ counts.missing_evidence }} missing items</h3>
+          <p>Northstar keeps product evidence and missing-proof tracking outside the Shopify admin UI.</p>
+        </article>
+        <article class="feature-card">
+          <p class="eyebrow">Cases</p>
+          <h3>{{ counts.open_cases }} open investigations</h3>
+          <p>Investigation logs and actions stay in the workspace so the team has one clean internal trail.</p>
+        </article>
+      </section>
+
+      <section class="cta-band">
+        <div>
+          <p class="eyebrow">Next step</p>
+          <h2>Open the control tower</h2>
+          <p class="small muted">For private pilots, Northstar uses Shopify for install and product sync, then runs the deeper workflow in its own operator workspace.</p>
+        </div>
+        <div class="button-row">
+          <a class="button" href="/workspace?shop={{ shop }}{% if host %}&host={{ host }}{% endif %}">Open workspace</a>
+          <a class="button ghost" href="/billing?shop={{ shop }}{% if host %}&host={{ host }}{% endif %}">Open billing</a>
+          <a class="button ghost" href="/support">Support</a>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

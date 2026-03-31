@@ -1,0 +1,18 @@
+services:
+  northstar-safety:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: northstar-safety
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: production
+      APP_HOST: 0.0.0.0
+      APP_PORT: 8000
+      NORTHSTAR_DATA_DIR: /data
+      NORTHSTAR_UPLOAD_DIR: /data/uploads
+      NORTHSTAR_BACKUP_DIR: /data/backups
+      SESSION_COOKIE_SECURE: "false"
+    volumes:
+      - ./northstar_safety_data:/data

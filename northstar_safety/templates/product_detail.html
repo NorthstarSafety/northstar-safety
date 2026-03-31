@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% block page_heading %}Product detail{% endblock %}
+{% block content %}
+<section class="guide-callout">
+  <p class="eyebrow">Product workspace</p>
+  <h3>This page brings proof, alerts, and investigations together for one product.</h3>
+  <p class="small muted">Use the checklist to see what is missing, then use the profile and documents panels to fill gaps Shopify does not track well enough on its own.</p>
+</section>
+<section class="detail-header">
+  <div>
+    <p class="eyebrow">SKU workspace</p>
+    <h3>{{ product.title }}</h3>
+    <p class="muted">{{ product.product_type }} | {{ product.vendor }} | {{ product.jurisdiction_scope }}</p>
+  </div>
+  <div class="pill-row">
+    <span class="badge neutral">{{ product.classification_label }}</span>
+    {% for tag in product.tags %}
+    <span class="pill" style="background: var(--panel-strong); color: var(--text);">{{ tag }}</span>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="grid-3">
+  <article class="panel">
+    <p class="eyebrow">Profile</p>
+    <div class="meta-list">
+      <div><span>Supplier</span><span class="value-strong">{{ product.supplier_name or 'Needs entry' }}</span></div>
+      <div><span>Origin</span><span class="value-strong">{{ product.country_of_origin or 'Needs entry' }}</span></div>
+      <div><span>Age grade</span><span class="value-strong">{{ product.age_grade or 'Needs entry' }}</span></div>
+      <div><span>Primary SKU</span><span class="value-strong">{{ variants[0].sku if variants and variants[0].sku else 'SKU missing' }}</span></div>
+      <div><span>Last sync</span><span class="value-strong">{{ product.last_synced_at[:10] }}</span></div>
+    </div>
+    {% if profile_gaps %}
+    <p class="small muted" style="margin-top: 12px;">Profile gaps: {{ profile_gaps|join(', ') }}</p>
+    {% endif %}
+  </article>
+  <article class="panel">
+    <p class="eyebrow">Variants</p>
+    <div class="timeline">
+      {% for variant in variants %}
+      <div class="timeline-item">
+        <strong>{{ variant.sku }}</strong>
+        <div class="small muted">{{ variant.title }} | {{ variant.inventory_quantity }} on hand | ${{ '%.2f'|format(variant.price) }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="panel">
+    <p class="eyebrow">Coverage</p>
+    <div class="kpi-list">
+      <div><span>Proof coverage</span><span class="value-strong">{{ readiness_score }}%</span></div>
+      <div><span>Current evidence</span><span class="value-strong">{{ evidence_summary.current }}</span></div>
+      <div><span>Missing evidence</span><span class="value-strong">{{ evidence_summary.missing }}</span></div>
+      <div><span>Review / stale</span><span class="value-strong">{{ evidence_summary.review + evidence_summary.stale }}</span></div>
+      <div><span>Documents</span><span class="value-strong">{{ documents|length }}</span></div>
+      <div><span>Matched alerts</span><span class="value-strong">{{ matches|length }}</span></div>
+      <div><span>Open cases</span><span class="value-strong">{{ active_case_count }}</span></div>
+      <div><span>Case history</span><span class="value-strong">{{ cases|length }}</span></div>
+    </div>
+  </article>
+</section>
+
+<section class="split" style="margin-top: 18px;">
+  <div class="stack">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Evidence checklist</p>
+          <h3>What is missing, stale, or still under review</h3>
+        </div>
+      </div>
+      <div class="table-shell">
+        <table>
+          <thead>
+            <tr>
+              <th>Requirement</th>
+              <th>Status</th>
+              <th>Linked document</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in evidence %}
+            <tr>
+              <td>
+                <strong>{{ item.title }}</strong>
+                <div class="small muted">{{ item.description }}</div>
+              </td>
+              <td><span class="badge {{ item.status_tone }}">{{ item.status_label }}</span></td>
+              <td>{{ item.document_title or 'None linked' }}</td>
+              <td>{{ item.notes or 'No note yet' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Matched alerts</p>
+          <h3>Possible notice matches for this product</h3>
+        </div>
+      </div>
+      {% if matches %}
+      <div class="timeline">
+        {% for match in matches %}
+        <div class="timeline-item">
+          <div class="small muted">{{ match.source_name }} | {{ match.alert_date[:10] }}</div>
+          <a href="/alerts/{{ match.alert_id }}"><strong>{{ match.alert_title }}</strong></a>
+          <p class="small">{{ match.rationale }} | score {{ match.score }}</p>
+          <div class="pill-row">
+            <span class="badge {{ match.severity_tone }}">{{ match.severity_label }}</span>
+            <span class="badge {{ match.confidence_tone }}">{{ match.confidence|capitalize }} confidence</span>
+            <span class="badge {{ match.status_tone }}">{{ match.status_label }}</span>
+          </div>
+          {% if match.reviewed_by %}
+          <p class="small muted" style="margin-top: 8px;">Reviewed by {{ match.reviewed_by }}{% if match.reviewed_at_short %} on {{ match.reviewed_at_short }}{% endif %}</p>
+          {% endif %}
+          {% if match.operator_note %}
+          <p class="small muted" style="margin-top: 8px;">{{ match.operator_note }}</p>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty">No relevant signals matched this product yet.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Compliance profile</p>
+          <h3>Fill the details Shopify does not provide well enough</h3>
+        </div>
+      </div>
+      <form method="post" action="/products/{{ product.id }}/profile" class="form-grid">
+        <label>Classification
+          <select name="classification">
+            {% for option in classification_options %}
+            <option value="{{ option.value }}" {% if option.value == product.classification %}selected{% endif %}>{{ option.label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>Age grade<input type="text" name="age_grade" value="{{ product.age_grade }}" placeholder="6 months+, 3+, or intended age"></label>
+        <label>Supplier name<input type="text" name="supplier_name" value="{{ product.supplier_name }}" placeholder="Factory or trading company"></label>
+        <label>Country of origin<input type="text" name="country_of_origin" value="{{ product.country_of_origin }}" placeholder="China, Vietnam, USA"></label>
+        <label style="grid-column: 1 / -1;">Jurisdiction scope<input type="text" name="jurisdiction_scope" value="{{ product.jurisdiction_scope }}" placeholder="United States, Canada"></label>
+        <div class="button-row" style="grid-column: 1 / -1;">
+          <button type="submit">Save compliance profile</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Documents</p>
+          <h3>Current proof on file</h3>
+        </div>
+      </div>
+      {% if documents %}
+      <div class="timeline">
+        {% for document in documents %}
+        <div class="timeline-item">
+          <div class="small muted">{{ document.doc_type }} | {{ document.issuer or 'Unknown issuer' }}</div>
+          <strong>{{ document.title }}</strong>
+          <div class="pill-row">
+            <span class="badge {{ document.status_tone }}">{{ document.status_label }}</span>
+            {% if document.file_name %}
+            <a class="button ghost small" href="/documents/{{ document.id }}/download">Download</a>
+            {% endif %}
+          </div>
+          <p class="small">{{ document.notes or 'No notes added.' }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty">No documents are attached yet. Upload the first certificate, test report, or supplier packet to start the evidence trail.</div>
+      {% endif %}
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Add evidence</p>
+          <h3>Attach proof to the right checklist item</h3>
+        </div>
+      </div>
+      <form method="post" action="/products/{{ product.id }}/documents" enctype="multipart/form-data" class="form-grid">
+        <label>Document title<input type="text" name="title" required></label>
+        <label>Document type
+          <select name="doc_type">
+            <option>CPC</option>
+            <option>Lab Report</option>
+            <option>Tracking Label</option>
+            <option>Registration Proof</option>
+            <option>Manual</option>
+            <option>Supplier Packet</option>
+            <option>Age Grade</option>
+            <option>Food Contact</option>
+            <option>Battery Review</option>
+            <option>Warning Art</option>
+          </select>
+        </label>
+        <label>Issuer<input type="text" name="issuer"></label>
+        <label>Status
+          <select name="status">
+            <option value="verified">Verified</option>
+            <option value="pending_review">Pending review</option>
+            <option value="supplier_sent">Supplier sent</option>
+          </select>
+        </label>
+        <label>Issue date<input type="date" name="issued_at"></label>
+        <label>Valid until<input type="date" name="valid_until"></label>
+        <label>Verified at<input type="date" name="verified_at"></label>
+        <label>Checklist item to satisfy
+          <select name="requirement_code">
+            <option value="">No linkage</option>
+            {% for item in evidence %}
+            <option value="{{ item.requirement_code }}" {% if item.requirement_code == suggested_requirement %}selected{% endif %}>{{ item.title }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>Source link<input type="url" name="source_url" placeholder="https://"></label>
+        <label class="single" style="grid-column: 1 / -1;">Notes<textarea name="notes"></textarea></label>
+        <label class="single" style="grid-column: 1 / -1;">Upload file<input type="file" name="file"></label>
+        <div class="button-row" style="grid-column: 1 / -1;">
+          <button type="submit">Save document</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

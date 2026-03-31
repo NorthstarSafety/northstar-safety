@@ -1,0 +1,34 @@
+{% extends "public_base.html" %}
+{% block content %}
+<section class="page-hero">
+  <p class="eyebrow">Support</p>
+  <h1>Clear support for a focused pilot product</h1>
+  <p class="lede">Northstar is still a private pilot, so the support model is intentionally direct and simple.</p>
+</section>
+
+<section class="public-grid public-grid-2">
+  <article class="feature-card">
+    <h3>Support hours</h3>
+    <p>{{ support_hours }}</p>
+    <p class="small muted" style="margin-top: 10px;">Support is handled directly through the Northstar team while the pilot base is still small.</p>
+  </article>
+  <article class="feature-card">
+    <h3>Best support route</h3>
+    <p><a href="mailto:{{ support_email }}">{{ support_email }}</a></p>
+    <p class="small muted" style="margin-top: 10px;">Use this route for pilot questions, setup help, review feedback, or install blockers.</p>
+  </article>
+  <article class="feature-card">
+    <h3>What merchants can expect</h3>
+    <ul class="feature-list">
+      <li>Founder-led kickoff support</li>
+      <li>One follow-up working session during the pilot</li>
+      <li>Light async help during onboarding</li>
+      <li>Clear boundaries around what is software versus legal advice</li>
+    </ul>
+  </article>
+  <article class="feature-card">
+    <h3>Current workspace access</h3>
+    <p>The public site is meant to be open. The merchant workspace can remain restricted while the product is still in private pilot mode.</p>
+  </article>
+</section>
+{% endblock %}

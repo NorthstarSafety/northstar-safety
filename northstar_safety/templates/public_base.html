@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ company_name }}{% if page_title %} | {{ page_title }}{% endif %}</title>
+  <meta name="description" content="{{ meta_description or company_name ~ ' helps child-product merchants keep Shopify catalog evidence and official recall review in one operating workflow.' }}">
+  <link rel="icon" href="{{ request.url_for('static', path='favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ request.url_for('static', path='styles.css') }}">
+</head>
+<body class="public-body">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="public-shell">
+    <header class="public-header">
+      <a class="brand-lockup" href="/" aria-label="{{ company_name }} home">
+        <span class="brand-mark">NS</span>
+        <span>
+          <span class="eyebrow">Shopify child-product safety</span>
+          <strong>{{ company_name }}</strong>
+        </span>
+      </a>
+      <nav class="public-nav" aria-label="Primary">
+        <a href="/" {% if active_public_page == 'home' %}aria-current="page"{% endif %}>Home</a>
+        <a href="/product" {% if active_public_page == 'product' %}aria-current="page"{% endif %}>Platform</a>
+        <a href="/pricing" {% if active_public_page == 'pricing' %}aria-current="page"{% endif %}>Pricing</a>
+        <a href="/shopify" {% if active_public_page == 'shopify' %}aria-current="page"{% endif %}>Shopify</a>
+        <a href="/security" {% if active_public_page == 'security' %}aria-current="page"{% endif %}>Security</a>
+        <a href="/support" {% if active_public_page == 'support' %}aria-current="page"{% endif %}>Support</a>
+        <a href="/contact" {% if active_public_page == 'contact' %}aria-current="page"{% endif %}>Contact</a>
+      </nav>
+      <div class="public-actions">
+        <a class="button ghost" href="{{ workspace_url }}">Open workspace</a>
+        <a class="button" href="{{ app_install_url }}">Install app</a>
+      </div>
+    </header>
+
+    {% if flash %}
+    <div class="flash {{ flash.level }}" role="status">{{ flash.message }}</div>
+    {% endif %}
+
+    <main id="main-content" class="public-main">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="public-footer">
+      <div>
+        <strong>{{ company_name }}</strong>
+        <p class="small muted">A focused safety operations layer for Shopify merchants selling child products.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="/support">Support</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <div class="small muted">
+        <div>{{ company_location }}</div>
+        <div><a href="mailto:{{ support_email }}">{{ support_email }}</a></div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

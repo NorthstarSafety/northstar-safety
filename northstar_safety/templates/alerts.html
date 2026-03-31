@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block page_heading %}Official safety notices{% endblock %}
+{% block content %}
+<section class="guide-callout">
+  <p class="eyebrow">What this page means</p>
+  <h3>Northstar reviews official notices against your catalog.</h3>
+  <p class="small muted">Candidates are possible product matches that still need review. Confirmed means the operator accepted the overlap. Dismissed means it was a false positive.</p>
+</section>
+<section class="panel">
+  <div class="panel-head">
+    <div>
+      <p class="eyebrow">Signal feed</p>
+      <h3>Official recall and safety notices</h3>
+    </div>
+    <form method="post" action="/actions/ingest-cpsc">
+      <button type="submit">Refresh official alerts</button>
+    </form>
+  </div>
+  <div class="table-shell">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Alert</th>
+          <th>Jurisdiction</th>
+          <th>Severity</th>
+          <th>Review status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for alert in alert_rows %}
+        <tr>
+          <td>{{ alert.alert_date[:10] }}</td>
+          <td>
+            <a href="/alerts/{{ alert.id }}"><strong>{{ alert.title }}</strong></a>
+            <div class="small muted">{{ alert.source_name }} | {{ alert.product_name }}</div>
+          </td>
+          <td>{{ alert.jurisdiction }}</td>
+          <td><span class="badge {{ alert.severity_tone }}">{{ alert.severity_label }}</span></td>
+          <td>
+            <div class="pill-row">
+              <span class="badge neutral">{{ alert.match_count }} candidates</span>
+              <span class="badge success">{{ alert.confirmed_count }} confirmed</span>
+              <span class="badge neutral">{{ alert.dismissed_count }} dismissed</span>
+              <span class="badge {{ alert.top_confidence_tone }}">{{ alert.top_confidence|capitalize }} confidence</span>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

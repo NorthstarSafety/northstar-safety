@@ -1,0 +1,52 @@
+{% extends "public_base.html" %}
+{% block content %}
+<section class="page-hero">
+  <p class="eyebrow">Install</p>
+  <h1>Connect Northstar to your Shopify store</h1>
+  <p class="lede">Start the Shopify authorization flow for one child-product store, then land back in a usable Northstar workspace with catalog sync ready to run.</p>
+</section>
+
+<section class="public-grid public-grid-2">
+  <article class="feature-card">
+    <p class="eyebrow">What Northstar asks for</p>
+    <h3>Product access only for the current workflow</h3>
+    <p>Northstar's core pilot uses Shopify product data so it can sync titles, SKUs, variants, and catalog structure. It does not need customer or order data for its current evidence and alert-review workflow.</p>
+    <ul class="feature-list">
+      <li>Read Shopify products and variants</li>
+      <li>Pull the live catalog into the evidence workflow</li>
+      <li>Preserve your existing demo mode if install is not complete</li>
+    </ul>
+  </article>
+  <article class="feature-card">
+    <p class="eyebrow">Current posture</p>
+    <h3>Built for a live single-store pilot</h3>
+    <p>Northstar is operationally ready for one live merchant workspace. Public App Store scale still needs final Shopify partner configuration, billing approval, and multi-store workspace isolation.</p>
+  </article>
+</section>
+
+<section class="guide-callout" style="max-width: 860px; margin: 0 auto 24px;">
+  <p class="eyebrow">Install behavior</p>
+  <h3>If Shopify sends a store domain to Northstar, the app starts OAuth immediately.</h3>
+  <p class="small muted">The manual store-domain form below is a private-pilot fallback only. For App Store review, Northstar should be launched from a Shopify-owned surface so the shop is already known.</p>
+</section>
+
+<section class="panel" style="max-width: 720px; margin: 0 auto;">
+  <div class="panel-head">
+    <div>
+      <p class="eyebrow">Start install</p>
+      <h3>Enter the Shopify store domain</h3>
+    </div>
+  </div>
+  <form method="post" action="/install" class="form-grid">
+    <label style="grid-column: 1 / -1;">
+      Shopify store domain
+      <input type="text" name="shop_domain" value="{{ shop_domain or '' }}" placeholder="store-name.myshopify.com" autocomplete="off">
+    </label>
+    <input type="hidden" name="next_path" value="/workspace">
+    <div class="button-row" style="grid-column: 1 / -1;">
+      <button type="submit">Continue to Shopify</button>
+      <a class="button ghost" href="/contact">Talk to Northstar first</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

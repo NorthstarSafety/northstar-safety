@@ -1,0 +1,84 @@
+services:
+  - type: web
+    name: northstar-safety
+    runtime: docker
+    plan: starter
+    autoDeploy: false
+    healthCheckPath: /healthz
+    dockerfilePath: ./Dockerfile
+    disk:
+      name: northstar-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_HOST
+        value: 0.0.0.0
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: NORTHSTAR_DATA_DIR
+        value: /data
+      - key: NORTHSTAR_UPLOAD_DIR
+        value: /data/uploads
+      - key: NORTHSTAR_BACKUP_DIR
+        value: /data/backups
+      - key: ENABLE_LIVE_CPSC
+        value: "true"
+      - key: ENABLE_LIVE_HEALTH_CANADA
+        value: "true"
+      - key: SHOPIFY_API_VERSION
+        value: 2025-10
+      - key: SHOPIFY_APP_SCOPES
+        value: read_products
+      - key: SHOPIFY_BILLING_REQUIRED
+        value: "true"
+      - key: SHOPIFY_BILLING_PLAN_NAME
+        value: Northstar Safety Founding Plan
+      - key: SHOPIFY_BILLING_PRICE_USD
+        value: "249"
+      - key: SHOPIFY_BILLING_INTERVAL
+        value: EVERY_30_DAYS
+      - key: SHOPIFY_BILLING_TRIAL_DAYS
+        value: "14"
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: APP_SECRET_KEY
+        sync: false
+      - key: NORTHSTAR_DATABASE_URL
+        fromDatabase:
+          name: northstar-safety-db
+          property: connectionString
+      - key: PUBLIC_SUPPORT_EMAIL
+        sync: false
+      - key: PUBLIC_SALES_EMAIL
+        sync: false
+      - key: PUBLIC_DEMO_LINK
+        sync: false
+      - key: SMTP_MODE
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: SMTP_FROM_EMAIL
+        sync: false
+      - key: SMTP_REPLY_TO
+        sync: false
+      - key: BASIC_AUTH_USERNAME
+        sync: false
+      - key: BASIC_AUTH_PASSWORD
+        sync: false
+      - key: SHOPIFY_CLIENT_ID
+        sync: false
+      - key: SHOPIFY_CLIENT_SECRET
+        sync: false
+
+databases:
+  - name: northstar-safety-db
+    plan: basic-256mb
+    databaseName: northstar_safety

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block page_heading %}Investigations and action log{% endblock %}
+{% block content %}
+<section class="guide-callout">
+  <p class="eyebrow">What this page means</p>
+  <h3>An investigation opens when a product-alert pair matters enough to track.</h3>
+  <p class="small muted">Use this page to see who owns each live investigation, what decision was made, and what action happened last.</p>
+</section>
+<section class="panel">
+  <div class="panel-head">
+    <div>
+      <p class="eyebrow">Triage queue</p>
+      <h3>Open investigations by product and notice</h3>
+    </div>
+    <div class="filters">
+      <a class="button {% if not selected_status %}ghost{% endif %}" href="/cases">All</a>
+      <a class="button {% if selected_status != 'action_needed' %}ghost{% endif %}" href="/cases?status=action_needed">Action needed</a>
+      <a class="button {% if selected_status != 'under_review' %}ghost{% endif %}" href="/cases?status=under_review">Under review</a>
+      <a class="button {% if selected_status != 'monitoring' %}ghost{% endif %}" href="/cases?status=monitoring">Monitoring</a>
+      <a class="button {% if selected_status != 'closed' %}ghost{% endif %}" href="/cases?status=closed">Closed</a>
+    </div>
+  </div>
+  <div class="table-shell">
+    {% if case_rows %}
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Alert</th>
+          <th>Status</th>
+          <th>Owner</th>
+          <th>Last action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for case in case_rows %}
+        <tr>
+          <td>
+            <a href="/cases/{{ case.id }}"><strong>{{ case.product_title }}</strong></a>
+            <div class="small muted">{{ case.classification_label }}</div>
+          </td>
+          <td>
+            {{ case.alert_title }}
+            <div class="small muted">{{ case.source_name }} | {{ case.alert_date[:10] }}</div>
+          </td>
+          <td>
+            <div class="pill-row">
+              <span class="badge {{ case.triage_status_tone }}">{{ case.triage_status_label }}</span>
+              <span class="badge {{ case.severity_tone }}">{{ case.severity_label }}</span>
+            </div>
+          </td>
+          <td>{{ case.owner }}</td>
+          <td>{{ case.last_action_summary }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty">
+      {% if workspace_settings.get('catalog_mode') == 'shopify' %}
+      Cases will open after live products sync and Northstar finds actionable alert overlaps.
+      {% else %}
+      No cases matched this filter.
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+{% block page_heading %}Settings and admin{% endblock %}
+{% block content %}
+<section class="guide-callout">
+  <p class="eyebrow">Admin</p>
+  <h3>Use settings to connect the store, check install and billing status, and watch new public-site inquiries.</h3>
+  <p class="small muted">Northstar now supports a real Shopify install callback for a single-store pilot workspace. Multi-store workspace isolation is still a later step.</p>
+</section>
+<section class="grid-2">
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Workspace settings</p>
+        <h3>Operator defaults</h3>
+      </div>
+    </div>
+    <form method="post" action="/settings" class="form-grid">
+      <label>Merchant name<input type="text" name="merchant_name" value="{{ settings.get('merchant_name', '') }}"></label>
+      <label>Default owner<input type="text" name="default_owner" value="{{ settings.get('default_owner', '') }}"></label>
+      <label>Jurisdictions<input type="text" name="jurisdictions" value="{{ settings.get('jurisdictions', '') }}"></label>
+      <label>Catalog mode
+        <select name="catalog_mode">
+          <option value="demo" {% if settings.get('catalog_mode') == 'demo' %}selected{% endif %}>Demo catalog</option>
+          <option value="shopify" {% if settings.get('catalog_mode') == 'shopify' %}selected{% endif %}>Shopify live</option>
+        </select>
+      </label>
+      <label>Shopify store domain<input type="text" name="shopify_store_domain" value="{{ settings.get('shopify_store_domain', effective_shopify.store_domain) }}" placeholder="store-name.myshopify.com"></label>
+      <label>Shopify API version<input type="text" name="shopify_api_version" value="{{ settings.get('shopify_api_version', effective_shopify.api_version) }}"></label>
+      <label>Client ID<input type="text" name="shopify_client_id" value="{{ settings.get('shopify_client_id', effective_shopify.client_id) }}" placeholder="Shopify app client ID"></label>
+      <label>Client secret
+        <input type="password" name="shopify_client_secret" placeholder="{% if effective_shopify.client_secret_present %}Client secret already configured. Leave blank to keep it.{% else %}Paste Shopify app client secret{% endif %}">
+      </label>
+      <label style="grid-column: 1 / -1;">Admin token override
+        <input type="password" name="shopify_admin_token" placeholder="{% if effective_shopify.token_present %}Token already configured. Leave blank to keep it.{% else %}Paste Shopify Admin API token{% endif %}">
+      </label>
+      <label>
+        <span style="display: block; margin-bottom: 8px;">Automatic catalog refresh</span>
+        <input type="checkbox" name="auto_catalog_sync_enabled" value="yes" {% if automation.catalog_sync.enabled %}checked{% endif %}>
+      </label>
+      <label>Catalog refresh interval (hours)<input type="number" min="1" name="auto_catalog_sync_interval_hours" value="{{ settings.get('auto_catalog_sync_interval_hours', '12') }}"></label>
+      <label>
+        <span style="display: block; margin-bottom: 8px;">Automatic alert refresh</span>
+        <input type="checkbox" name="auto_alert_ingest_enabled" value="yes" {% if automation.alert_ingest.enabled %}checked{% endif %}>
+      </label>
+      <label>Alert refresh interval (hours)<input type="number" min="1" name="auto_alert_ingest_interval_hours" value="{{ settings.get('auto_alert_ingest_interval_hours', '24') }}"></label>
+      <label>Reminder destination<input type="email" name="reminder_contact_email" value="{{ settings.get('reminder_contact_email', '') }}" placeholder="support@company.com"></label>
+      <label>Reminder cadence (days)<input type="number" min="1" name="evidence_reminder_frequency_days" value="{{ settings.get('evidence_reminder_frequency_days', '7') }}"></label>
+      <p class="small muted" style="grid-column: 1 / -1;">Production secrets stay outside this form. Configure `APP_SECRET_KEY`, `NORTHSTAR_DATABASE_URL`, and SMTP env vars at deploy time rather than storing them in the workspace database.</p>
+      <div class="button-row" style="grid-column: 1 / -1;">
+        <button type="submit">Save settings</button>
+      </div>
+    </form>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Integration state</p>
+        <h3>What is mocked vs. live-ready</h3>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="small muted">Catalog sync</div>
+        <strong>{% if effective_shopify.store_domain and (effective_shopify.token_present or effective_shopify.client_credentials_present) %}Live-ready{% else %}Demo mode{% endif %}</strong>
+        <p class="small">
+          {% if effective_shopify.store_domain %}
+          Connected store target: {{ effective_shopify.store_domain }} via {{ effective_shopify.source }} config.
+          {% else %}
+          The app stays on seeded demo data until a Shopify domain and credentials are configured.
+          {% endif %}
+        </p>
+      </div>
+      <div class="timeline-item">
+        <div class="small muted">Credential mode</div>
+        <strong>
+          {% if effective_shopify.token_present %}
+          Cached admin token ready
+          {% elif effective_shopify.client_credentials_present %}
+          Client credentials will mint a token on demand
+          {% else %}
+          No live Shopify credentials yet
+          {% endif %}
+        </strong>
+        <p class="small">
+          {% if effective_shopify.client_credentials_present %}
+          Client ID is saved. The secret is present and the token will refresh automatically when it expires.
+          {% else %}
+          For a private pilot, you can store either a direct admin token or the Shopify app client credentials here.
+          {% endif %}
+        </p>
+      </div>
+      <div class="timeline-item">
+        <div class="small muted">Operator access</div>
+        <strong>{% if launch_readiness.users.ready %}{{ launch_readiness.users.count }} named user{% if launch_readiness.users.count != 1 %}s{% endif %} configured{% else %}No named users yet{% endif %}</strong>
+        <p class="small">{% if basic_auth_enabled %}Basic auth is still available as an outer deployment gate.{% else %}Basic auth is optional, but named operator accounts should be set up before launch.{% endif %}</p>
+      </div>
+      <div class="timeline-item">
+        <div class="small muted">Official recalls</div>
+        <strong>{% if settings.get('live_cpsc_enabled') == 'yes' %}CPSC live{% else %}CPSC off{% endif %}{% if launch_readiness %} | {% if runtime_settings.enable_live_health_canada %}Health Canada live{% else %}Health Canada off{% endif %}{% endif %}</strong>
+        <p class="small">Northstar now supports review-first live pulls from CPSC and Health Canada. Demo alerts stay seeded even when live pulls are unavailable.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="small muted">Data volume</div>
+        <strong>{{ counts.shopify_products }} live products | {{ counts.documents }} documents | {{ counts.evidence_items }} evidence items</strong>
+        <p class="small">The pilot keeps working in demo mode, but a live store with zero products now shows as an intentional empty state instead of stale seed data.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="small muted">Pilot note</div>
+        <strong>Single-store workspace with install support.</strong>
+        <p class="small">Northstar can now start from a public install link and land back in this workspace, but the data model is still optimized for one live merchant at a time.</p>
+      </div>
+    </div>
+  </article>
+</section>
+
+<section class="grid-2" style="margin-top: 18px;">
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Launch hardening</p>
+        <h3>Customer-zero blockers</h3>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="small muted">Public host</div>
+        <strong>{% if launch_readiness.public_base_url.live_ready %}Ready{% else %}Needs final host{% endif %}</strong>
+        <p class="small" style="margin-top: 8px;">{{ launch_readiness.public_base_url.value }}<br>{{ launch_readiness.public_base_url.notes }}</p>
+      </div>
+      <div class="timeline-item">
+        <div class="small muted">Database</div>
+        <strong>{{ launch_readiness.database.backend|capitalize }}</strong>
+        <p class="small" style="margin-top: 8px;">{{ launch_readiness.database.notes }}</p>
+      </div>
+      <div class="timeline-item">
+        <div class="small muted">Secret key</div>
+        <strong>{% if launch_readiness.secret_key.configured %}Configured{% else %}Ephemeral{% endif %}</strong>
+        <p class="small" style="margin-top: 8px;">{{ launch_readiness.secret_key.notes }}</p>
+      </div>
+      <div class="timeline-item">
+        <div class="small muted">SMTP</div>
+        <strong>{% if launch_readiness.smtp.configured %}Ready{% else %}Not configured{% endif %}</strong>
+        <p class="small" style="margin-top: 8px;">{{ launch_readiness.smtp.notes }}</p>
+        <form method="post" action="/settings/test-email" style="margin-top: 12px;">
+          <input type="email" name="test_email" placeholder="support@company.com" value="{{ settings.get('reminder_contact_email', '') or 'support@northstarsafetyapp.com' }}">
+          <button class="button ghost small" type="submit" style="margin-top: 8px;">Send SMTP test</button>
+        </form>
+      </div>
+      <div class="timeline-item">
+        <div class="small muted">Charge path</div>
+        <strong>{% if launch_readiness.billing.ready %}Ready{% else %}Bridge required{% endif %}</strong>
+        <p class="small" style="margin-top: 8px;">{{ launch_readiness.billing.notes }}</p>
+      </div>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Workspace users</p>
+        <h3>Named operator access</h3>
+      </div>
+    </div>
+    <form method="post" action="/settings/users" class="form-grid">
+      <label>Full name<input type="text" name="full_name" placeholder="Omar Khatib" required></label>
+      <label>Email<input type="email" name="email" placeholder="founder@northstarsafetyapp.com" required></label>
+      <label>Role
+        <select name="role">
+          <option value="admin">Admin</option>
+          <option value="operator">Operator</option>
+        </select>
+      </label>
+      <label>Password<input type="password" name="password" placeholder="Set a strong password" required></label>
+      <div class="button-row" style="grid-column: 1 / -1;">
+        <button type="submit">Create workspace user</button>
+      </div>
+    </form>
+    {% if workspace_users %}
+    <div class="timeline" style="margin-top: 18px;">
+      {% for user in workspace_users %}
+      <div class="timeline-item">
+        <div class="small muted">{{ user.email }}</div>
+        <strong>{{ user.full_name }}</strong>
+        <p class="small" style="margin-top: 8px;">{{ user.role|capitalize }}{% if user.last_login_at %} | Last login {{ user.last_login_at[:19] }}{% endif %}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty" style="margin-top: 18px;">No named operator accounts yet.</div>
+    {% endif %}
+  </article>
+</section>
+
+<section class="grid-2" style="margin-top: 18px;">
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Install status</p>
+        <h3>Connected Shopify installs</h3>
+      </div>
+      <a class="button ghost" href="/install">Open install page</a>
+    </div>
+    {% if shop_installs %}
+    <div class="timeline">
+      {% for install in shop_installs %}
+      <div class="timeline-item">
+        <div class="small muted">{{ install.installed_at[:19] }} | {{ install.shop_domain }}</div>
+        <strong>{{ install.shop_name or install.shop_domain }}</strong>
+        <p class="small" style="margin-top: 8px;">
+          {{ install.plan_name or 'Plan unknown' }}
+          {% if install.is_partner_development %} | Partner development{% endif %}
+          {% if install.is_shopify_plus %} | Shopify Plus{% endif %}
+        </p>
+        <p class="small" style="margin-top: 8px;">
+          Scope: {{ install.scope or 'unknown' }}
+          {% if install.launch_url %} | <a href="{{ install.launch_url }}" target="_blank" rel="noreferrer">Launch in Shopify</a>{% endif %}
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">No Shopify OAuth installs recorded yet. Use the public install link to test the real callback flow.</div>
+    {% endif %}
+  </article>
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Billing readiness</p>
+        <h3>Commercial path for the pilot offer</h3>
+      </div>
+      <a class="button ghost" href="/billing">Open billing</a>
+    </div>
+    {% if billing_snapshot %}
+    <div class="timeline-item">
+      <div class="small muted">{{ billing_snapshot.updated_at[:19] }} | {{ billing_snapshot.shop_domain }}</div>
+      <strong>{{ billing_snapshot.status|capitalize }}</strong>
+      <p class="small" style="margin-top: 8px;">{{ billing_snapshot.notes }}</p>
+      {% if billing_snapshot.confirmation_url %}
+      <a class="button ghost" style="margin-top: 12px;" href="{{ billing_snapshot.confirmation_url }}" target="_blank" rel="noreferrer">Open Shopify approval</a>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="empty">No billing event has been recorded yet. Northstar can still run as a private pilot while the billing flow is tested.</div>
+    {% endif %}
+  </article>
+</section>
+
+<section class="grid-2" style="margin-top: 18px;">
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Automatic refreshes</p>
+        <h3>Background jobs for the pilot workspace</h3>
+      </div>
+      <form method="post" action="/actions/run-automation">
+        <button class="button ghost" type="submit">Run enabled refreshes now</button>
+      </form>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="small muted">Catalog refresh</div>
+        <strong>
+          {% if automation.catalog_sync.enabled %}
+          {% if automation.catalog_sync.ready %}Enabled{% else %}Enabled but blocked{% endif %}
+          {% else %}
+          Off
+          {% endif %}
+        </strong>
+        <p class="small" style="margin-top: 8px;">
+          Every {{ automation.catalog_sync.interval_hours }} hours.
+          {% if automation.catalog_sync.last_run %}Last completed {{ automation.catalog_sync.last_run.completed_at[:19] if automation.catalog_sync.last_run.completed_at else automation.catalog_sync.last_run.started_at[:19] }}.{% else %}No completed live catalog refresh yet.{% endif %}
+        </p>
+      </div>
+      <div class="timeline-item">
+        <div class="small muted">Alert refresh</div>
+        <strong>
+          {% if automation.alert_ingest.enabled %}
+          {% if automation.alert_ingest.ready %}Enabled{% else %}Enabled but blocked{% endif %}
+          {% else %}
+          Off
+          {% endif %}
+        </strong>
+        <p class="small" style="margin-top: 8px;">
+          {{ automation.alert_ingest.sources_label }} every {{ automation.alert_ingest.interval_hours }} hours.
+          {% if automation.alert_ingest.last_run %}Last completed {{ automation.alert_ingest.last_run.completed_at[:19] if automation.alert_ingest.last_run.completed_at else automation.alert_ingest.last_run.started_at[:19] }}.{% else %}No completed alert refresh yet.{% endif %}
+        </p>
+      </div>
+      <div class="timeline-item">
+        <div class="small muted">Reminder drafting</div>
+        <strong>{{ evidence_reminders.item_count }} evidence items currently need follow-up</strong>
+        <p class="small" style="margin-top: 8px;">Reminder drafts are prepared for {{ automation.reminders.contact_email }} on a {{ automation.reminders.frequency_days }}-day cadence.</p>
+      </div>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Reminder queue</p>
+        <h3>Products that still need evidence follow-up</h3>
+      </div>
+      <a class="button ghost" href="/evidence/reminder-draft.txt">Download reminder draft</a>
+    </div>
+    {% if evidence_reminders.products %}
+    <div class="timeline">
+      {% for item in evidence_reminders.products %}
+      <div class="timeline-item">
+        <div class="small muted">{{ item.vendor or 'Unknown vendor' }}</div>
+        <strong>{{ item.product_title }}</strong>
+        <p class="small" style="margin-top: 8px;">{{ item.missing_count }} missing | {{ item.stale_count }} stale</p>
+        {% if item.requirement_preview %}
+        <p class="small muted" style="margin-top: 8px;">{{ item.requirement_preview }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">No reminder draft is needed right now because there are no missing or stale evidence items.</div>
+    {% endif %}
+  </article>
+</section>
+
+<section class="grid-2" style="margin-top: 18px;">
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Public inquiries</p>
+        <h3>Recent website demo requests</h3>
+      </div>
+    </div>
+    {% if contact_requests %}
+    <div class="timeline">
+      {% for inquiry in contact_requests %}
+      <div class="timeline-item">
+        <div class="small muted">{{ inquiry.created_at[:19] }} | {{ inquiry.company }}</div>
+        <strong>{{ inquiry.name }}{% if inquiry.role_title %} | {{ inquiry.role_title }}{% endif %}</strong>
+        <p class="small" style="margin-top: 8px;"><a href="mailto:{{ inquiry.email }}">{{ inquiry.email }}</a>{% if inquiry.website %} | <a href="{{ inquiry.website }}" target="_blank" rel="noreferrer">{{ inquiry.website }}</a>{% endif %}</p>
+        <p class="small" style="margin-top: 8px;">{{ inquiry.message }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">No public site requests yet.</div>
+    {% endif %}
+  </article>
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Missing dependencies</p>
+        <h3>What still blocks full public rollout</h3>
+      </div>
+    </div>
+    {% if missing_dependencies %}
+    <div class="timeline">
+      {% for item in missing_dependencies %}
+      <div class="timeline-item">{{ item }}</div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">All configured dependencies are present.</div>
+    {% endif %}
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Recent runs</p>
+        <h3>Sync and ingest history</h3>
+      </div>
+    </div>
+    <div class="timeline">
+      {% for run in sync_runs %}
+      <div class="timeline-item">
+        <div class="small muted">{{ run.started_at[:19] }} | {{ run.source_name }} | {{ run.run_type }}</div>
+        <strong>{{ run.status|capitalize }}</strong>
+        <p class="small">{{ run.notes }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
+
+<section class="grid-2" style="margin-top: 18px;">
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Pilot checklist</p>
+        <h3>What is left before a design-partner walkthrough</h3>
+      </div>
+    </div>
+    <div class="timeline">
+      {% for item in pilot_checklist %}
+      <div class="timeline-item">
+        <div class="pill-row" style="margin-top: 0; margin-bottom: 8px;">
+          <span class="badge {% if item.completed %}success{% else %}neutral{% endif %}">{% if item.completed %}Done{% else %}Next{% endif %}</span>
+        </div>
+        <strong>{{ item.title }}</strong>
+        <p class="small" style="margin-top: 8px;">{{ item.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Recommended next step</p>
+        <h3>Where to unblock the pilot fastest</h3>
+      </div>
+    </div>
+    {% if next_step %}
+    <div class="timeline-item">
+      <strong>{{ next_step.title }}</strong>
+      <p class="small" style="margin-top: 8px;">{{ next_step.description }}</p>
+      <a class="button ghost" style="margin-top: 12px;" href="{{ next_step.href }}" {% if next_step.href.startswith('/static/') %}download{% endif %}>{{ next_step.cta }}</a>
+    </div>
+    {% else %}
+    <div class="empty">The current pilot checklist is complete.</div>
+    {% endif %}
+  </article>
+</section>
+{% endblock %}

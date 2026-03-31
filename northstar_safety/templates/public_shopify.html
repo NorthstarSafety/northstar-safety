@@ -1,0 +1,55 @@
+{% extends "public_base.html" %}
+{% block content %}
+<section class="page-hero">
+  <p class="eyebrow">Shopify readiness</p>
+  <h1>Built around Shopify catalog reality, with a clear path to public review</h1>
+  <p class="lede">Northstar is already connected to a live Shopify store for pilot use. The current product now has a real install callback and a billing-ready path, while the last public-distribution steps are being hardened.</p>
+</section>
+
+<section class="public-grid public-grid-2">
+  <article class="feature-card">
+    <p class="eyebrow">Current access</p>
+    <h3>Read-only product scope for the core workflow</h3>
+    <p>Northstar's current pilot uses product access to sync titles, variants, SKUs, and related catalog metadata. The product does not need customer or order data for its core evidence and alert-review workflow.</p>
+  </article>
+  <article class="feature-card">
+    <p class="eyebrow">Current install shape</p>
+    <h3>Real OAuth callback for a single-store workspace</h3>
+    <p>Northstar can now send a store through Shopify authorization and land back in the hosted workspace. The current runtime is still optimized for one live merchant workspace at a time.</p>
+  </article>
+  <article class="feature-card">
+    <p class="eyebrow">Ready now</p>
+    <h3>Permissions explanation, support, and legal pages</h3>
+    <p>Northstar now has a public site, privacy and terms pages, a support posture, a public contact path, and compliance webhook scaffolding for future App Store review.</p>
+  </article>
+  <article class="feature-card">
+    <p class="eyebrow">Still required</p>
+    <h3>Partner-area ownership and full public rollout</h3>
+    <p>The largest remaining blocker is Shopify app ownership and review packaging. Billing cannot complete until the app is migrated into the Shopify Partners area, and multi-store workspace isolation is still a later product step.</p>
+  </article>
+</section>
+
+<section class="public-section">
+  <div class="section-heading">
+    <p class="eyebrow">Public-review path</p>
+    <h2>The highest-leverage work already done for eventual Shopify review</h2>
+  </div>
+  <div class="workflow-grid">
+    <article class="workflow-card"><span>1</span><strong>Public website</strong><p>Clear positioning, contact routes, support pages, privacy, and terms are now in place.</p></article>
+    <article class="workflow-card"><span>2</span><strong>Permissions clarity</strong><p>The product explains its current read-only catalog access and why broader merchant data is not needed for the core workflow.</p></article>
+    <article class="workflow-card"><span>3</span><strong>OAuth callback and uninstall webhook</strong><p>Northstar now includes a real install callback plus webhook handling for required compliance topics and app uninstall events.</p></article>
+    <article class="workflow-card"><span>4</span><strong>Billing-ready path</strong><p>The app can create a recurring Shopify subscription flow, and it now reports the exact app-ownership blocker if the current app is not yet eligible to bill.</p></article>
+  </div>
+</section>
+<section class="cta-band">
+  <div>
+    <p class="eyebrow">Install Northstar</p>
+    <h2>Use the live install flow on a Shopify store</h2>
+    <p class="small muted">This works best once your public base URL and allowed redirect URLs are aligned in Shopify.</p>
+  </div>
+  <div class="button-row">
+    <a class="button" href="{{ app_install_url }}">Open install page</a>
+    <a class="button ghost" href="/contact">Ask a setup question</a>
+  </div>
+</section>
+{% endblock %}

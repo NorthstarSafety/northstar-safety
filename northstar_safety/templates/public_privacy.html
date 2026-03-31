@@ -1,0 +1,29 @@
+{% extends "public_base.html" %}
+{% block content %}
+<section class="legal-shell">
+  <p class="eyebrow">Privacy policy</p>
+  <h1>{{ company_name }} privacy policy</h1>
+  <p class="small muted">Last updated: 2026-03-23</p>
+
+  <h2>What this policy covers</h2>
+  <p>This policy explains how {{ company_name }} handles information collected through the public website, private pilot setup, and the merchant workspace.</p>
+
+  <h2>Website contact requests</h2>
+  <p>If you submit a request through the public site, Northstar stores the details you provide, such as your name, work email, company, website, and message, so the team can respond to your inquiry.</p>
+
+  <h2>Merchant workspace data</h2>
+  <p>For pilot merchants, Northstar stores product catalog information, evidence documents, alert review records, case notes, and related operational metadata needed to deliver the workflow.</p>
+
+  <h2>How information is used</h2>
+  <p>Northstar uses this information to operate the product, support the pilot, respond to requests, and improve the workflow. Northstar does not sell merchant data.</p>
+
+  <h2>Third-party services</h2>
+  <p>Northstar connects to Shopify for catalog access and may use infrastructure providers for hosting, storage, and secure delivery. Merchants remain responsible for their own legal and regulatory obligations.</p>
+
+  <h2>Retention</h2>
+  <p>Northstar retains information only as long as reasonably needed to operate the pilot, support the merchant, meet contractual obligations, and handle lawful data requests.</p>
+
+  <h2>Questions</h2>
+  <p>For privacy questions, contact <a href="mailto:{{ support_email }}">{{ support_email }}</a>.</p>
+</section>
+{% endblock %}

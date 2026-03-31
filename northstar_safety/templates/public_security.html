@@ -1,0 +1,48 @@
+{% extends "public_base.html" %}
+{% block content %}
+<section class="page-hero">
+  <p class="eyebrow">Security and trust</p>
+  <h1>Northstar is built to be understandable before it is overbuilt</h1>
+  <p class="lede">The product is currently optimized for a private pilot, with a narrow data scope, clear operator actions, and a deployment path that keeps public marketing pages separate from the merchant workspace.</p>
+</section>
+
+<section class="public-grid public-grid-3">
+  <article class="trust-card">
+    <strong>Minimal data scope</strong>
+    <p class="small muted">Northstar's core workflow is catalog, evidence, and alert review. It does not need customer or order data to deliver value.</p>
+  </article>
+  <article class="trust-card">
+    <strong>Private workspace controls</strong>
+    <p class="small muted">The operator workspace can stay behind basic auth even while the public company site remains openly accessible.</p>
+  </article>
+  <article class="trust-card">
+    <strong>Documented support path</strong>
+    <p class="small muted">Merchants have clear contact and support routes instead of relying on ad hoc founder messages.</p>
+  </article>
+</section>
+
+<section class="public-section">
+  <div class="section-heading">
+    <p class="eyebrow">Trust posture</p>
+    <h2>What Northstar does today</h2>
+  </div>
+  <div class="public-grid public-grid-2">
+    <article class="feature-card">
+      <h3>Stores evidence and review history together</h3>
+      <p>Northstar keeps document uploads, evidence states, alert review decisions, and case notes in one persistent workspace.</p>
+    </article>
+    <article class="feature-card">
+      <h3>Supports official-source review</h3>
+      <p>The signal feed is designed around official notices and source links rather than speculative social reporting.</p>
+    </article>
+    <article class="feature-card">
+      <h3>Deployment-ready with standard tooling</h3>
+      <p>Northstar can run behind Caddy or Docker on a small VM, with a persistent data volume and HTTPS at the edge.</p>
+    </article>
+    <article class="feature-card">
+      <h3>Ready for stronger secret handling later</h3>
+      <p>The current pilot supports direct configuration quickly, while the deployment docs already point toward environment or secret-manager-based handling for production.</p>
+    </article>
+  </div>
+</section>
+{% endblock %}

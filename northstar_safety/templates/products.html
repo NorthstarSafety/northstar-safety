@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block page_heading %}Catalog coverage{% endblock %}
+{% block content %}
+<section class="guide-callout">
+  <p class="eyebrow">What this page means</p>
+  <h3>Each synced Shopify product becomes one safety workspace.</h3>
+  <p class="small muted">Readiness is the share of required proof that is current. Open cases are live investigations. Alerts are possible matches from official notices.</p>
+</section>
+<section class="panel">
+  <div class="panel-head">
+    <div>
+      <p class="eyebrow">Catalog</p>
+      <h3>Shopify-synced product list</h3>
+    </div>
+    <form method="get" class="inline-actions">
+      <input type="text" name="q" placeholder="Search title, vendor, type" value="{{ search }}">
+      <button class="button ghost" type="submit">Search</button>
+    </form>
+  </div>
+  {% if workspace_settings.get('catalog_mode') == 'shopify' and not products %}
+  <div class="empty" style="margin-bottom: 16px;">
+    The connected store is live but empty. Import the pilot CSV into Shopify or create one test product, then run <strong>Sync connected Shopify store</strong> again.
+    <div class="button-row" style="justify-content: center; margin-top: 12px;">
+      <a class="button ghost" href="/static/northstar-pilot-products.csv" download>Download pilot CSV</a>
+      <a class="button ghost" href="/settings">Open settings</a>
+    </div>
+  </div>
+  {% endif %}
+  <div class="table-shell">
+    {% if products %}
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Primary SKU</th>
+          <th>Classification</th>
+          <th>Coverage</th>
+          <th>Vendor</th>
+          <th>Evidence health</th>
+          <th>Cases</th>
+          <th>Alerts</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+        <tr>
+          <td>
+            <a href="/products/{{ product.id }}"><strong>{{ product.title }}</strong></a>
+            <div class="small muted">{{ product.product_type }} | {{ product.jurisdiction_scope }}</div>
+          </td>
+          <td>{{ product.primary_sku }}</td>
+          <td>{{ product.classification_label }}</td>
+          <td>
+            <div class="pill-row">
+              <span class="badge {% if product.readiness_score >= 75 %}success{% elif product.readiness_score >= 40 %}warning{% else %}danger{% endif %}">{{ product.readiness_score }}% covered</span>
+            </div>
+          </td>
+          <td>{{ product.vendor }}</td>
+          <td>
+            <div class="pill-row">
+              <span class="badge success">{{ product.evidence_summary.get('current', 0) }} current</span>
+              <span class="badge warning">{{ product.evidence_summary.get('stale', 0) }} stale</span>
+              <span class="badge danger">{{ product.evidence_summary.get('missing', 0) }} missing</span>
+            </div>
+          </td>
+          <td>{{ product.case_count }}</td>
+          <td>{{ product.alert_count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty">
+      {% if workspace_settings.get('catalog_mode') == 'shopify' %}
+      The connected Shopify store currently has no synced products. Add a product in Shopify, then run <strong>Sync connected Shopify store</strong> again.
+      {% else %}
+      No products matched your filters.
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

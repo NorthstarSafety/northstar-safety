@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ app_name }}{% if page_title %} | {{ page_title }}{% endif %}</title>
+  <link rel="icon" href="{{ request.url_for('static', path='favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ request.url_for('static', path='styles.css') }}">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Workspace navigation">
+      <div class="brand">
+        <div class="brand-mark">NS</div>
+        <div>
+          <p class="eyebrow">Child-product safety</p>
+          <h1>{{ app_name }}</h1>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Primary">
+        <a href="/workspace" class="{% if active_page == 'dashboard' %}active{% endif %}" {% if active_page == 'dashboard' %}aria-current="page"{% endif %}>Dashboard</a>
+        <a href="/products" class="{% if active_page == 'products' %}active{% endif %}">Products</a>
+        <a href="/evidence" class="{% if active_page == 'evidence' %}active{% endif %}">Evidence</a>
+        <a href="/alerts" class="{% if active_page == 'alerts' %}active{% endif %}">Alerts</a>
+        <a href="/cases" class="{% if active_page == 'cases' %}active{% endif %}">Cases</a>
+        <a href="/billing" class="{% if active_page == 'billing' %}active{% endif %}">Billing</a>
+        <a href="/settings" class="{% if active_page == 'settings' %}active{% endif %}">Settings</a>
+      </nav>
+      <div class="sidebar-card">
+        <p class="eyebrow">Workflow owned</p>
+        <strong>Catalog sync to action log</strong>
+        <p>Built for US and Canada child-product operators who need one clean compliance trail per SKU.</p>
+        {% if workspace_users_enabled and current_user %}
+        <div class="pill-row" style="margin-top: 12px;">
+          <span class="badge neutral">{{ current_user.full_name }}</span>
+          <span class="badge neutral">{{ current_user.role|capitalize }}</span>
+        </div>
+        <form method="post" action="/logout" style="margin-top: 12px;">
+          <button class="button ghost small" type="submit">Sign out</button>
+        </form>
+        {% elif not workspace_users_enabled %}
+        <p class="small muted" style="margin-top: 12px;">Named operator sign-in is not set up yet. Create the first workspace user in Settings before launch.</p>
+        {% endif %}
+        <div class="button-row" style="margin-top: 12px;">
+          <a class="button ghost small" href="/">Public site</a>
+        </div>
+      </div>
+    </aside>
+
+    <main id="main-content" class="content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">{% if workspace_settings.get('catalog_mode') == 'shopify' %}Northstar live pilot{% else %}Northstar demo{% endif %}</p>
+          <h2>{% block page_heading %}{% endblock %}</h2>
+          {% if workspace_settings.get('catalog_mode') == 'shopify' and workspace_settings.get('shopify_store_domain') %}
+          <p class="small muted" style="margin-top: 8px;">Connected store: {{ workspace_settings.get('shopify_store_domain') }}</p>
+          {% endif %}
+        </div>
+        <div class="topbar-actions">
+          <form method="post" action="/actions/sync-catalog">
+            <button class="button ghost" type="submit">
+              {% if workspace_settings.get('catalog_mode') == 'shopify' %}
+              Sync connected Shopify store
+              {% else %}
+              Sync demo catalog
+              {% endif %}
+            </button>
+          </form>
+          <form method="post" action="/actions/ingest-cpsc">
+            <button class="button" type="submit">Refresh official alerts</button>
+          </form>
+        </div>
+      </header>
+
+      {% if flash %}
+      <div class="flash {{ flash.level }}">{{ flash.message }}</div>
+      {% endif %}
+
+{% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

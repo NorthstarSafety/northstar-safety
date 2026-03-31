@@ -1,0 +1,39 @@
+{% extends "public_base.html" %}
+{% block content %}
+<section class="page-hero">
+  <p class="eyebrow">Contact</p>
+  <h1>Request a Northstar walkthrough</h1>
+  <p class="lede">If you run child-product operations on Shopify and the monthly evidence or recall-review workflow is still manual, Northstar is ready for a live pilot conversation.</p>
+</section>
+
+<section class="public-grid public-grid-2">
+  <article class="form-card">
+    <h2>Request a private pilot walkthrough</h2>
+    <form method="post" action="/contact" class="form-grid">
+      <input type="hidden" name="source_page" value="contact">
+      <label>Name<input type="text" name="name" required></label>
+      <label>Email<input type="email" name="email" required></label>
+      <label>Company<input type="text" name="company" required></label>
+      <label>Role<input type="text" name="role_title" placeholder="Founder, ops, quality, sourcing"></label>
+      <label style="grid-column: 1 / -1;">Website<input type="url" name="website" placeholder="https://"></label>
+      <label style="grid-column: 1 / -1;">What feels manual today?<textarea name="message" required placeholder="For example: supplier documents are scattered, recall review is ad hoc, or we cannot see missing evidence by SKU."></textarea></label>
+      <div class="button-row" style="grid-column: 1 / -1;">
+        <button type="submit">Save request</button>
+        <a class="button ghost" href="{{ demo_link }}">Email instead</a>
+      </div>
+    </form>
+  </article>
+  <article class="feature-card">
+    <p class="eyebrow">Best fit</p>
+    <h3>Who should reach out now</h3>
+    <ul class="feature-list">
+      <li>Shopify child-product merchants</li>
+      <li>US or US-plus-Canada sales</li>
+      <li>10 to 200 active SKUs</li>
+      <li>Lean internal owner for the workflow</li>
+      <li>Evidence exists but is scattered</li>
+    </ul>
+    <p class="small muted">If you already have a mature in-house compliance platform, Northstar is probably too narrow for your needs today.</p>
+  </article>
+</section>
+{% endblock %}

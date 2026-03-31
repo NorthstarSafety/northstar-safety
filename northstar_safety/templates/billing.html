@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block page_heading %}Billing{% endblock %}
+{% block content %}
+<section class="guide-callout">
+  <p class="eyebrow">Commercial path</p>
+  <h3>Use Shopify billing for the ongoing monthly plan once the founding pilot is complete.</h3>
+  <p class="small muted">Northstar's founding pilot is currently sold directly for 45 days. The recurring in-app plan is {{ billing.billing_plan_name }} at ${{ '%.0f'|format(billing.billing_price_usd) }}/month with a {{ billing.billing_trial_days }}-day Shopify trial.</p>
+  <p class="small muted">If Shopify billing is still blocked by app ownership, Northstar can keep selling paid pilots through direct invoicing until the final Partner-managed app is live.</p>
+</section>
+
+<section class="grid-2">
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Current store</p>
+        <h3>{{ billing.shop.name or billing.shop_domain }}</h3>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="small muted">Shop domain</div>
+        <strong>{{ billing.shop_domain }}</strong>
+      </div>
+      <div class="timeline-item">
+        <div class="small muted">Current plan</div>
+        <strong>{{ billing.shop.plan.displayName if billing.shop.plan else 'Unknown' }}</strong>
+      </div>
+      <div class="timeline-item">
+        <div class="small muted">Billing mode</div>
+        <strong>{% if billing.billing_test_mode %}Test mode{% else %}Live mode{% endif %}</strong>
+        <p class="small">Test mode is safer while the app is still being validated for submission and merchant rollout.</p>
+      </div>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <p class="eyebrow">Subscription status</p>
+        <h3>{% if billing.has_active_subscription %}Active{% else %}No active subscription yet{% endif %}</h3>
+      </div>
+    </div>
+    {% if billing.has_active_subscription %}
+    <div class="timeline-item">
+      <div class="small muted">{{ billing.active_subscription.name }}</div>
+      <strong>{{ billing.active_subscription.status|capitalize }}</strong>
+      <p class="small" style="margin-top: 8px;">The current app installation already has an active subscription, so Northstar does not need to create another charge.</p>
+    </div>
+    {% else %}
+    <div class="timeline-item">
+      <strong>{{ billing.billing_plan_name }}</strong>
+      <p class="small" style="margin-top: 8px;">Northstar can create a Shopify recurring subscription for the pilot once the app is fully eligible to bill through Shopify.</p>
+      <form method="post" action="/billing/start" style="margin-top: 12px;">
+        <button type="submit">Start Shopify billing flow</button>
+      </form>
+    </div>
+    {% endif %}
+  </article>
+</section>
+{% endblock %}

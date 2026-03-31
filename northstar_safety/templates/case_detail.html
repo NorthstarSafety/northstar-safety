@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block page_heading %}Case detail{% endblock %}
+{% block content %}
+<section class="guide-callout">
+  <p class="eyebrow">Investigation record</p>
+  <h3>This page is the internal trail for one product and one official notice.</h3>
+  <p class="small muted">Use it to keep the owner, current decision, notes, and source links together so another teammate can understand what happened later.</p>
+</section>
+<section class="detail-header">
+  <div>
+    <p class="eyebrow">Investigation case</p>
+    <h3>{{ case.product_title }}</h3>
+    <p class="muted">{{ case.alert_title }}</p>
+  </div>
+  <div class="pill-row">
+    <span class="badge {{ case.triage_status_tone }}">{{ case.triage_status_label }}</span>
+    <span class="badge {{ case.severity_tone }}">{{ case.severity_label }}</span>
+    <a class="button ghost" href="{{ case.source_url }}" target="_blank" rel="noreferrer">Source notice</a>
+    <a class="button ghost" href="/cases/{{ case.id }}/summary.txt">Download summary</a>
+  </div>
+</section>
+
+<section class="grid-2">
+  <article class="panel">
+    <p class="eyebrow">Case profile</p>
+    <div class="meta-list">
+      <div><span>Owner</span><span class="value-strong">{{ case.owner }}</span></div>
+      <div><span>Priority</span><span class="value-strong">{{ case.priority|capitalize }}</span></div>
+      <div><span>Opened</span><span class="value-strong">{{ case.opened_at[:10] }}</span></div>
+      <div><span>Classification</span><span class="value-strong">{{ case.classification_label }}</span></div>
+    </div>
+    <div style="margin-top: 16px;">
+      <p class="eyebrow">Current decision</p>
+      <h3>{{ case.decision }}</h3>
+      <p style="margin-top: 10px;">{{ case.last_action_summary }}</p>
+    </div>
+  </article>
+  <article class="panel">
+    <p class="eyebrow">Hazard context</p>
+    <h3>{{ case.hazard }}</h3>
+    <p style="margin-top: 12px;">This case links a catalog SKU to an official safety signal and preserves the internal reasoning, notes, and actions for later audit use.</p>
+  </article>
+</section>
+
+<section class="split" style="margin-top: 18px;">
+  <div class="stack">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Action log</p>
+          <h3>Timeline</h3>
+        </div>
+      </div>
+      {% if events %}
+      <div class="timeline">
+        {% for event in events %}
+        <div class="timeline-item">
+          <div class="small muted">{{ event.created_at[:19] }} | {{ event.actor_name }} | {{ event.event_type|replace('_', ' ')|title }}</div>
+          <strong>{{ event.note }}</strong>
+          {% if event.source_url %}
+          <div style="margin-top: 8px;"><a class="button ghost small" href="{{ event.source_url }}" target="_blank" rel="noreferrer">Source link</a></div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty">No notes recorded yet.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Update case</p>
+          <h3>Change triage state</h3>
+        </div>
+      </div>
+      <form method="post" action="/cases/{{ case.id }}/status" class="form-grid">
+        <label>Owner<input type="text" name="owner" value="{{ current_user.full_name if current_user and case.owner in ['Unassigned', ''] else case.owner }}"></label>
+        <label>Priority
+          <select name="priority">
+            {% for priority in ['high', 'medium', 'low'] %}
+            <option value="{{ priority }}" {% if case.priority == priority %}selected{% endif %}>{{ priority|capitalize }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>Status
+          <select name="triage_status">
+            {% for value, label in case_status_labels.items() %}
+            <option value="{{ value }}" {% if case.triage_status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>Decision<input type="text" name="decision" value="{{ case.decision }}"></label>
+        <label class="single" style="grid-column: 1 / -1;">Latest action summary<textarea name="last_action_summary">{{ case.last_action_summary }}</textarea></label>
+        <div class="button-row" style="grid-column: 1 / -1;">
+          <button type="submit">Update case</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Log note</p>
+      <h3>Add a timeline note</h3>
+        </div>
+      </div>
+      <form method="post" action="/cases/{{ case.id }}/events" class="form-grid">
+        <label>Actor<input type="text" name="actor_name" value="{{ current_user.full_name if current_user else case.owner }}"></label>
+        <label>Event type
+          <select name="event_type">
+            <option value="note">Note</option>
+            <option value="decision">Decision</option>
+            <option value="supplier_followup">Supplier follow-up</option>
+            <option value="containment">Containment</option>
+          </select>
+        </label>
+        <label>Source link<input type="url" name="source_url" placeholder="https://"></label>
+        <label class="single" style="grid-column: 1 / -1;">Note<textarea name="note" required></textarea></label>
+        <div class="button-row" style="grid-column: 1 / -1;">
+          <button type="submit">Add log entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

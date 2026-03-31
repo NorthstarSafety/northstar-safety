@@ -1,0 +1,13 @@
+Northstar Safety pilot evidence
+Document: Food-contact declaration summary
+Brand: SnackSprout
+Product: SnackSprout Silicone Feeding Set
+SKU: SNS-FEED-001
+Jurisdictions: United States, Canada
+
+Summary
+- Supplier declaration covers silicone food-contact materials for the feeding set.
+- Placeholder file attached to demonstrate evidence linkage on a live Shopify SKU.
+
+Pilot note
+- Replace with the supplier's signed declaration and supporting lab data before go-live.

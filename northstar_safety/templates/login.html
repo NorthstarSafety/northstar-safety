@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ app_name }} | Workspace sign-in</title>
+  <link rel="icon" href="{{ request.url_for('static', path='favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ request.url_for('static', path='styles.css') }}">
+</head>
+<body>
+  <main class="public-shell" style="max-width: 560px; padding-top: 80px;">
+    <section class="hero-card">
+      <p class="eyebrow">Northstar workspace</p>
+      <h1>Sign in to the operator workspace</h1>
+      <p class="lead">Use the named operator account for this pilot so case actions, alert review, and document decisions stay attributable.</p>
+      {% if flash %}
+      <div class="flash {{ flash.level }}" style="margin-top: 18px;">{{ flash.message }}</div>
+      {% endif %}
+      <form method="post" action="/login" class="form-grid" style="margin-top: 24px;">
+        <input type="hidden" name="next_path" value="{{ next_path }}">
+        <label>Email<input type="email" name="email" autocomplete="username" required></label>
+        <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+        <div class="button-row" style="grid-column: 1 / -1;">
+          <button type="submit">Sign in</button>
+          <a class="button ghost" href="/">Back to public site</a>
+        </div>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

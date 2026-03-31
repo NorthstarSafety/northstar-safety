@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block page_heading %}Alert detail{% endblock %}
+{% block content %}
+<section class="guide-callout">
+  <p class="eyebrow">Notice review</p>
+  <h3>Review one official notice against the live catalog.</h3>
+  <p class="small muted">Confirm the match if the notice really applies to the product. Dismiss it if it is a false positive, and write down why so the next review stays faster.</p>
+</section>
+<section class="detail-header">
+  <div>
+    <p class="eyebrow">{{ alert.source_name }} | {{ alert.alert_date[:10] }}</p>
+    <h3>{{ alert.title }}</h3>
+    <p class="muted">{{ alert.product_name }}</p>
+  </div>
+  <div class="pill-row">
+    <span class="badge {{ alert.severity_tone }}">{{ alert.severity_label }}</span>
+    <a class="button ghost" href="{{ alert.source_url }}" target="_blank" rel="noreferrer">Open source notice</a>
+  </div>
+</section>
+
+<section class="grid-2">
+  <article class="panel">
+    <p class="eyebrow">Hazard</p>
+    <h3>{{ alert.hazard }}</h3>
+    <p style="margin-top: 12px;">{{ alert.description }}</p>
+  </article>
+  <article class="panel">
+    <p class="eyebrow">Routing</p>
+    <div class="meta-list">
+      <div><span>Jurisdiction</span><span class="value-strong">{{ alert.jurisdiction }}</span></div>
+      <div><span>Status</span><span class="value-strong">{{ alert.status|capitalize }}</span></div>
+      <div><span>Matches</span><span class="value-strong">{{ matches|length }}</span></div>
+    </div>
+  </article>
+</section>
+
+<section class="grid-4" style="margin-top: 18px;">
+  <article class="metric-card">
+    <p class="eyebrow">Candidates</p>
+    <strong>{{ summary.candidate }}</strong>
+    <p class="muted">Matches still waiting for operator review.</p>
+  </article>
+  <article class="metric-card">
+    <p class="eyebrow">Confirmed</p>
+    <strong>{{ summary.confirmed }}</strong>
+    <p class="muted">Matches accepted into the live workflow.</p>
+  </article>
+  <article class="metric-card">
+    <p class="eyebrow">Dismissed</p>
+    <strong>{{ summary.dismissed }}</strong>
+    <p class="muted">False positives already recorded.</p>
+  </article>
+  <article class="metric-card">
+    <p class="eyebrow">Open cases</p>
+    <strong>{{ summary.open_cases }}</strong>
+    <p class="muted">Investigations still active.</p>
+  </article>
+</section>
+
+<section class="panel" style="margin-top: 18px;">
+  <div class="panel-head">
+    <div>
+      <p class="eyebrow">Catalog matches</p>
+      <h3>Products linked to this notice</h3>
+    </div>
+  </div>
+  {% if matches %}
+  <div class="table-shell">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Operator review</th>
+          <th>Confidence</th>
+          <th>Rationale</th>
+          <th>Case</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for match in matches %}
+        <tr>
+          <td>
+            <a href="/products/{{ match.product_id }}"><strong>{{ match.product_title }}</strong></a>
+            <div class="small muted">{{ match.vendor }} | {{ match.classification_label }}</div>
+          </td>
+          <td>
+            <div class="pill-row" style="margin-bottom: 8px;">
+              <span class="badge {{ match.status_tone }}">{{ match.status_label }}</span>
+              <span class="badge {{ match.confidence_tone }}">{{ match.confidence|capitalize }} confidence</span>
+            </div>
+            <div class="small muted" style="margin-bottom: 8px;">{{ match.review_guidance }}</div>
+            {% if match.operator_note %}
+            <div class="small muted" style="margin-bottom: 8px;">{{ match.operator_note }}</div>
+            {% endif %}
+            {% if match.reviewed_by %}
+            <div class="small muted" style="margin-bottom: 8px;">Reviewed by {{ match.reviewed_by }}{% if match.reviewed_at_short %} on {{ match.reviewed_at_short }}{% endif %}</div>
+            {% endif %}
+            <form method="post" action="/matches/{{ match.id }}/review" class="form-grid single">
+              <input type="hidden" name="return_to" value="/alerts/{{ alert.id }}">
+              <label>Review note<input type="text" name="operator_note" placeholder="Required for dismissals. Use model, lot, or seller reasoning."></label>
+              <label>Reviewed by<input type="text" name="reviewed_by" value="{{ current_user.full_name if current_user else workspace_settings.get('default_owner', 'Operator') }}"></label>
+              <div class="button-row">
+                <button type="submit" name="review_status" value="confirmed">Confirm</button>
+                <button class="ghost" type="submit" name="review_status" value="dismissed">Dismiss</button>
+              </div>
+            </form>
+          </td>
+          <td>{{ match.score }} score</td>
+          <td>{{ match.rationale }}</td>
+          <td>
+            {% if match.case_id %}
+            <a href="/cases/{{ match.case_id }}"><span class="badge {{ match.triage_status_tone }}">{{ match.triage_status_label }}</span></a>
+            {% else %}
+            <span class="badge neutral">No case opened</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No product matches yet.</div>
+  {% endif %}
+</section>
+{% endblock %}
