@@ -17,6 +17,7 @@ Configured in Stripe live:
 - offer scope: one Shopify store, first 10 priority SKUs, 30-day pilot
 - hosted payment link created successfully
 - custom confirmation message added to the hosted checkout flow
+- Affirm and Klarna tuned with custom minimum-amount rules so BNPL does not appear on the `$300` pilot checkout
 
 Configured in Stripe sandbox as rehearsal proof:
 
@@ -56,6 +57,7 @@ What remains open is optional polish, not activation:
 - adding richer Stripe branding assets if desired
 - deciding whether to create a recurring continuation product later
 - refining the invoice template if customers regularly ask for invoices first
+- optionally narrowing non-BNPL wallet methods further if the founder wants an even more card-only checkout
 
 ## Exact next founder action
 
@@ -86,4 +88,4 @@ Use:
 
 Northstar can now take a real live `$300` pilot payment through Stripe.
 
-The customer-facing pricing and payment copy are aligned with the one-time founding-pilot offer, the live payment link exists, and the invoice fallback can be used without waiting for Shopify billing.
+The customer-facing pricing and payment copy are aligned with the one-time founding-pilot offer, the live payment link exists, BNPL methods have been pushed off the `$300` checkout, and the invoice fallback can be used without waiting for Shopify billing.
