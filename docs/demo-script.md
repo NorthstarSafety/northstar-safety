@@ -16,7 +16,7 @@ Point out:
 
 - the best-fit customer
 - the founding pilot structure
-- the low-friction 45-day scope
+- the low-friction 30-day scope
 - the install path and contact path
 
 ### 2. Open the dashboard
@@ -103,4 +103,4 @@ Point out:
 
 Finish with:
 
-"The founding pilot is intentionally narrow: one store, first 25 priority SKUs, 45 days, and a clear decision point. If the workflow is real for your team, the next step is to connect the store, upload the first evidence packet, and prove the monthly process on your live catalog."
+"The founding pilot is intentionally narrow: one store, first 10 priority SKUs, 30 days, and a clear decision point. If the workflow is real for your team, the next step is to connect the store, upload the first evidence packet, and prove the workflow on your live catalog."

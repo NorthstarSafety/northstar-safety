@@ -21,13 +21,13 @@ Northstar is the strongest fit for:
 
 ## Pilot term
 
-Offer Northstar as a **45-day founding pilot**.
+Offer Northstar as a **30-day founding pilot**.
 
 Why this works:
 
-- long enough to prove a real monthly workflow
-- short enough to feel low-risk
-- simple enough to buy without enterprise procurement
+- long enough to prove the live workflow
+- short enough to feel low-risk for a small team
+- simple enough to approve without enterprise procurement
 
 ## What is included
 
@@ -35,15 +35,16 @@ Why this works:
 - one internal owner
 - live catalog sync
 - evidence checklist generation per product
-- first compliance-profile pass on up to **25 priority SKUs**
+- first compliance-profile pass on up to **10 priority SKUs**
 - live CPSC ingest
+- live Health Canada ingest
 - match review with false-positive handling
 - case and action trail for confirmed overlaps
 - founder-led kickoff session
-- one follow-up working session during the pilot
+- one founder follow-up working session during the pilot
 - light async support by email during onboarding
 
-All synced SKUs remain visible in the workspace. The active founding-pilot scope stays focused on the first 25 priority SKUs so the rollout stays fast and controlled.
+All synced SKUs remain visible in the workspace. The active founding-pilot scope stays focused on the first 10 priority SKUs so the rollout stays fast and controlled.
 
 ## What setup is required from the merchant
 
@@ -56,14 +57,15 @@ All synced SKUs remain visible in the workspace. The active founding-pilot scope
 
 Start with:
 
-- **$750 flat** for the 45-day founding pilot
-- **$249/month** after the pilot if the merchant continues on one live store
+- **$300 flat** for the 30-day founding pilot
 
 Why this structure works:
 
-- easier for a small business owner to approve quickly
-- enough revenue to keep onboarding founder-led and responsive
-- clean decision point before the merchant moves into ongoing monthly use
+- easy for a small business owner to approve quickly
+- narrow enough to stay software-led instead of turning into a services project
+- gives Northstar a real paid proof point without forcing a recurring commitment before the workflow is proven
+
+If the pilot works, continuation pricing is discussed before any longer-term rollout. There is no automatic monthly charge implied by the pilot offer.
 
 ## What is not included
 

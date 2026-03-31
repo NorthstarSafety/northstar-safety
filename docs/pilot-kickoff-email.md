@@ -10,7 +10,7 @@ Your Northstar pilot is ready to start. The goal for the first week is simple:
 
 1. confirm the internal owner
 2. connect the Shopify store
-3. choose the first 25 priority SKUs
+3. choose the first 10 priority SKUs
 4. upload the first evidence packet
 5. review the first alert and case workflow
 

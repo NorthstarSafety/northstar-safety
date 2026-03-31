@@ -17,8 +17,8 @@ Use [demo-script.md](C:/Users/onkha/OneDrive/Documents/New%20project/docs/demo-s
 Ask before the call ends:
 
 - who would own this internally?
-- which 25 SKUs matter first?
-- what would make this clearly worth paying for in 45 days?
+- which 10 SKUs matter first?
+- what would make this clearly worth paying for in 30 days?
 
 ### 3. Pilot discussion
 
@@ -26,7 +26,7 @@ Restate:
 
 - one store
 - one internal owner
-- first 25 priority SKUs
+- first 10 priority SKUs
 - founder-led kickoff
 - evidence checklist setup
 - recall review workflow
@@ -36,7 +36,7 @@ Restate:
 
 Use this line:
 
-"If the workflow is real for your team, the next step is simple: we start with one store and your first 25 priority SKUs, use the 45-day pilot to prove the process, and only move into the monthly plan if it is clearly earning its place."
+"If the workflow is real for your team, the next step is simple: we start with one store and your first 10 priority SKUs, use the 30-day pilot to prove the process, and only talk about a longer rollout if it clearly earns its place."
 
 ### 5. Billing and kickoff
 

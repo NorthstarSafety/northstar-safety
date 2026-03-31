@@ -43,10 +43,12 @@ Northstar turns those steps into one monthly workflow.
 
 - one Shopify store
 - one internal owner
-- first 25 priority SKUs in active rollout scope
+- first 10 priority SKUs in active rollout scope
 - founder-led onboarding
 - direct invoicing during private pilots
-- $750 for the first 45 days, then $249/month if the merchant continues
+- $300 one-time for a 30-day founding pilot
+
+If the pilot proves the workflow, Northstar can propose a continuation plan later. The pilot itself is intentionally a one-time payment.
 
 ## Best-fit merchant
 

@@ -8,11 +8,11 @@ Get a paid pilot from verbal yes to live kickoff with the least founder drag pos
 
 - confirm the internal owner
 - confirm one Shopify store only
-- confirm the first 25 priority SKUs
+- confirm the first 10 priority SKUs
 - confirm Northstar is an operations layer, not legal counsel
 - confirm the pilot term and price:
-  - `$750 flat` for the 45-day founding pilot
-  - `$249/month` if the merchant continues after the pilot
+  - `$300 one-time` for the 30-day founding pilot
+  - continuation pricing discussed only if the pilot proves value
 
 ## Payment trigger
 
@@ -32,7 +32,7 @@ Get a paid pilot from verbal yes to live kickoff with the least founder drag pos
 
 1. confirm pilot scope
 2. connect the Shopify store
-3. select the first 25 priority SKUs
+3. select the first 10 priority SKUs
 4. upload the first evidence packet
 5. review the first alert and case workflow
 6. agree the first 14-day success checkpoint

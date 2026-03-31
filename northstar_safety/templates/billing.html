@@ -3,8 +3,8 @@
 {% block content %}
 <section class="guide-callout">
   <p class="eyebrow">Commercial path</p>
-  <h3>Use Shopify billing for the ongoing monthly plan once the founding pilot is complete.</h3>
-  <p class="small muted">Northstar's founding pilot is currently sold directly for 45 days. The recurring in-app plan is {{ billing.billing_plan_name }} at ${{ '%.0f'|format(billing.billing_price_usd) }}/month with a {{ billing.billing_trial_days }}-day Shopify trial.</p>
+  <h3>Use Shopify billing only after the founding pilot proves the workflow and Northstar is ready for an ongoing plan.</h3>
+  <p class="small muted">Northstar's founding pilot is currently sold directly as a one-time payment. Shopify billing stays in the product as the later path for an ongoing plan once pricing and app readiness are fully settled.</p>
   <p class="small muted">If Shopify billing is still blocked by app ownership, Northstar can keep selling paid pilots through direct invoicing until the final Partner-managed app is live.</p>
 </section>
 
@@ -49,7 +49,7 @@
     {% else %}
     <div class="timeline-item">
       <strong>{{ billing.billing_plan_name }}</strong>
-      <p class="small" style="margin-top: 8px;">Northstar can create a Shopify recurring subscription for the pilot once the app is fully eligible to bill through Shopify.</p>
+      <p class="small" style="margin-top: 8px;">Northstar can create a Shopify recurring subscription later if the pilot expands into an ongoing plan and the app is fully eligible to bill through Shopify.</p>
       <form method="post" action="/billing/start" style="margin-top: 12px;">
         <button type="submit">Start Shopify billing flow</button>
       </form>

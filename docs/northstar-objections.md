@@ -28,7 +28,7 @@ Northstar does not replace labs or legal counsel. It gives the internal team one
 
 Response:
 
-That is why the pilot is one store, one owner, and the first 25 priority SKUs. The scope is intentionally narrow.
+That is why the pilot is one store, one owner, and the first 10 priority SKUs. The scope is intentionally narrow.
 
 ## "We do not want a services project."
 
@@ -70,4 +70,4 @@ The workflow and jurisdiction model already support US plus Canada. The next pro
 
 Response:
 
-That is why the founding pilot is a flat `$750` instead of a bigger onboarding project. It gives your team 45 days to prove the workflow on live SKUs before you decide whether the monthly plan earns its place.
+That is why the founding pilot is a simple `$300` one-time payment instead of a bigger onboarding project. It gives your team 30 days to prove the workflow on live SKUs before any longer-term decision is even discussed.

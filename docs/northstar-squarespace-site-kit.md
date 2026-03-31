@@ -476,17 +476,16 @@ Plan name:
 
 Price line:
 
-- $750 for the first 45 days
-- $249 per month after the pilot
+- $300 one-time for the founding pilot
 
 Support line:
 
-- 45-day initial pilot
+- 30-day initial pilot
 
 Included list:
 
 - One Shopify store connection
-- Up to 25 priority SKUs actively configured
+- Up to 10 priority SKUs actively configured
 - SKU-level evidence organization
 - Official alert review workflow
 - Investigation and action tracking
@@ -534,17 +533,18 @@ Headline:
 Body:
 
 - If Shopify-native billing is not yet active on the final production app, early pilot customers can still start through direct invoicing and move into Shopify-native billing later.
+- If Shopify-native billing is not yet active on the final production app, early pilot customers can still start through Stripe payment link or direct invoicing.
 
 ### Pricing FAQ
 
 - Is there a long contract?
-  Answer: The initial pilot is designed as a 45-day working period with a clear decision point afterward.
+  Answer: No. The pilot is a one-time 30-day working period with a clear decision point afterward.
 
 - Is onboarding included?
   Answer: Yes. Founder-led onboarding is included because the first value comes from getting the live workflow running correctly.
 
 - Do all SKUs need to be configured at once?
-  Answer: No. The active pilot scope starts with the first 25 priority SKUs.
+  Answer: No. The active pilot scope starts with the first 10 priority SKUs.
 
 ### Final CTA
 

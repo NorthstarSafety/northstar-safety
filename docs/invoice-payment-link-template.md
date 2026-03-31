@@ -13,15 +13,15 @@ To reserve your Northstar onboarding slot, please complete the founding-pilot pa
 The founding pilot is:
 
 - one Shopify store
-- first 25 priority SKUs
-- 45 days
-- $750 flat
+- first 10 priority SKUs
+- 30 days
+- $300 one-time
 
 Once paid, we will:
 
 - confirm your kickoff slot
 - connect the store
-- set the first 25 SKUs in scope
+- set the first 10 SKUs in scope
 - request the first evidence packet
 - aim to reach the first live review workflow in the first week
 

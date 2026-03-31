@@ -83,7 +83,7 @@ Explain:
 
 Ask:
 
-- would one store and your first 25 priority SKUs be enough to prove value?
+- would one store and your first 10 priority SKUs be enough to prove value?
 - who would own this internally?
 - how quickly could you provide the first evidence packet?
 

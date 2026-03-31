@@ -36,7 +36,7 @@ Northstar is a private founding pilot for one Shopify store selling child produc
 - review official recall signals
 - log investigations and decisions
 
-The pilot scope is one store and the first 25 priority SKUs. Pricing is `$750` for the first 45 days, then `$249/month` only if you want to keep using it after the pilot.
+The pilot scope is one store and the first 10 priority SKUs. Pricing is `$300` one-time for the 30-day pilot.
 
 If useful, I can also show it live in 15 minutes.
 
@@ -130,14 +130,12 @@ Hi {{Name}},
 
 I simplified the pilot specifically to keep it easy for a small team to say yes:
 
-- `$750` for the first 45 days
+- `$300` one-time
 - one store
-- first 25 priority SKUs in active scope
+- first 10 priority SKUs in active scope
 - kickoff and follow-up included
 
-If you keep it after the pilot, the founding rate is `$249/month`.
-
-The goal is to prove value on the live workflow before anything broader is discussed. If the process is not clearly useful in 45 days, you should not be forced into a bigger commitment.
+The goal is to prove value on the live workflow before anything broader is discussed. If the process is not clearly useful in 30 days, you should not be pushed into a longer commitment.
 
 Omar Khatib
 Founder, Northstar Safety
@@ -154,7 +152,7 @@ Thanks again for the time today.
 The live pilot we discussed is:
 
 - one Shopify store
-- first 25 priority SKUs
+- first 10 priority SKUs
 - evidence checklist setup
 - official recall review workflow
 - internal case and action trail
