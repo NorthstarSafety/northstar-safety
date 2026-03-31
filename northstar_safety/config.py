@@ -36,7 +36,8 @@ class Settings:
     app_name: str = os.getenv("APP_NAME", "Northstar Safety")
     app_env: str = os.getenv("APP_ENV", "development")
     app_host: str = os.getenv("APP_HOST", "127.0.0.1")
-    app_port: int = int(os.getenv("APP_PORT", os.getenv("PORT", "8000")))
+    # Prefer platform-provided PORT when present so Docker hosts like Render can wire health checks correctly.
+    app_port: int = int(os.getenv("PORT", os.getenv("APP_PORT", "8000")))
     app_secret_key: str = _runtime_secret
     app_secret_key_configured: bool = bool(_configured_secret)
     session_cookie_name: str = os.getenv("SESSION_COOKIE_NAME", "northstar_session")
