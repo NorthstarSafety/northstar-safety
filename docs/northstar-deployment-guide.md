@@ -94,9 +94,17 @@ Suggested process:
 - `SHOPIFY_BILLING_REQUIRED=true`
 - `SMTP_MODE=smtp`
 - `SMTP_HOST`
-- `SMTP_USERNAME`
-- `SMTP_PASSWORD`
+- optional `SMTP_USERNAME`
+- optional `SMTP_PASSWORD`
 - `SMTP_FROM_EMAIL=support@your-domain`
+
+Google Workspace relay is a supported path:
+
+- `SMTP_HOST=smtp-relay.gmail.com`
+- `SMTP_PORT=587`
+- `SMTP_STARTTLS=true`
+- leave `SMTP_USERNAME` and `SMTP_PASSWORD` blank
+- allowlist the host egress IPs in Google Workspace SMTP relay
 
 Optional:
 

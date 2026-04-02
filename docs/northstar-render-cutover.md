@@ -49,9 +49,17 @@ Important note:
 - `SHOPIFY_CLIENT_SECRET`
 - `SMTP_MODE`
 - `SMTP_HOST`
-- `SMTP_USERNAME`
-- `SMTP_PASSWORD`
 - `SMTP_FROM_EMAIL`
+- optional `SMTP_USERNAME`
+- optional `SMTP_PASSWORD`
+
+Recommended SMTP path for the current Google Workspace setup:
+
+- `SMTP_HOST=smtp-relay.gmail.com`
+- `SMTP_PORT=587`
+- `SMTP_STARTTLS=true`
+- leave `SMTP_USERNAME` and `SMTP_PASSWORD` blank
+- allowlist the Render outbound IPs in Google Workspace SMTP relay
 
 Recommended:
 

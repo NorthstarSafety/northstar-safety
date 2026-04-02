@@ -24,7 +24,7 @@ Date: 2026-03-30
 ## What was narrowed exactly
 
 - Postgres blocker: create the managed Render database and set `NORTHSTAR_DATABASE_URL`
-- SMTP blocker: set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, and `SMTP_REPLY_TO`
+- SMTP blocker: set `SMTP_HOST`, `SMTP_PORT`, `SMTP_FROM_EMAIL`, and `SMTP_REPLY_TO`, then either add SMTP auth or allowlist Render egress IPs for Google relay
 - Domain blocker: add `app.northstarsafetyapp.com` in Render first, then create the DNS record Render provides
 - Billing blocker: move the Shopify app into Shopify Partners before using `/billing/start`
 
@@ -33,13 +33,13 @@ Date: 2026-03-30
 1. In Render, create the managed PostgreSQL database.
 2. Add its internal connection string to `NORTHSTAR_DATABASE_URL`.
 3. Redeploy Northstar.
-4. Enable Google 2-Step Verification for `support@northstarsafetyapp.com` if it is not already on, then create a Google app password for SMTP.
+4. In Google Workspace SMTP relay, allowlist the Render outbound IPs for `support@northstarsafetyapp.com`.
 5. Add these SMTP credentials in Render and use the settings page test-email button:
    - `SMTP_MODE=smtp`
-   - `SMTP_HOST=smtp.gmail.com`
+   - `SMTP_HOST=smtp-relay.gmail.com`
    - `SMTP_PORT=587`
-   - `SMTP_USERNAME=support@northstarsafetyapp.com`
-   - `SMTP_PASSWORD=<app password>`
+   - `SMTP_USERNAME=`
+   - `SMTP_PASSWORD=`
    - `SMTP_FROM_EMAIL=support@northstarsafetyapp.com`
    - `SMTP_REPLY_TO=support@northstarsafetyapp.com`
 6. Add `app.northstarsafetyapp.com` as a custom domain in Render.

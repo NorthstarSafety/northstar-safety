@@ -125,17 +125,19 @@ Because the remaining blockers are now provider-side rather than code-side, the 
 2. Copy the Render internal database URL into `NORTHSTAR_DATABASE_URL` on the `northstar-safety` web service.
 3. Redeploy the service.
 4. If any SQLite state still matters, run `scripts/northstar_migrate_to_postgres.py` once against the old SQLite file and the new Postgres URL during the cutover.
-5. For SMTP, use Google Workspace SMTP on `support@northstarsafetyapp.com` with:
+5. For SMTP, use Google Workspace SMTP relay on `support@northstarsafetyapp.com` with:
    - `SMTP_MODE=smtp`
-   - `SMTP_HOST=smtp.gmail.com`
+   - `SMTP_HOST=smtp-relay.gmail.com`
    - `SMTP_PORT=587`
-   - `SMTP_USERNAME=support@northstarsafetyapp.com`
-   - `SMTP_PASSWORD=<Google app password>`
+   - `SMTP_USERNAME=`
+   - `SMTP_PASSWORD=`
    - `SMTP_FROM_EMAIL=support@northstarsafetyapp.com`
    - `SMTP_REPLY_TO=support@northstarsafetyapp.com`
+   - `SMTP_STARTTLS=true`
+   - Render egress IPs allowlisted in Google Workspace SMTP relay
 6. Redeploy again and use the Settings page test-email button.
 
-If Google Workspace app-password SMTP is not available yet, the exact remaining blocker is: create an app password for `support@northstarsafetyapp.com` after enabling 2-Step Verification on that mailbox.
+If Google Workspace relay is not working yet, the exact remaining blocker is: allowlist the Render outbound IPs inside Google Workspace SMTP relay settings.
 
 ## Important live note
 
@@ -147,9 +149,9 @@ The hosted Render app is now serving the newer runtime behavior with relative st
 2. If any SQLite state still matters, run `scripts/northstar_migrate_to_postgres.py` during the cutover.
 3. Add SMTP credentials:
    - `SMTP_HOST`
-   - `SMTP_USERNAME`
-   - `SMTP_PASSWORD`
    - `SMTP_FROM_EMAIL`
+   - optional `SMTP_USERNAME`
+   - optional `SMTP_PASSWORD`
 4. Sign in with the live named workspace user and confirm the password is stored safely in the local operator handoff.
 5. Add `app.northstarsafetyapp.com` to the Render service and then update DNS.
 6. After the custom domain is live, update `PUBLIC_BASE_URL`.

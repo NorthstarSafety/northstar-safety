@@ -36,16 +36,23 @@
   Purpose: SMTP port
 
 - `SMTP_USERNAME`
-  Purpose: SMTP auth user
+  Purpose: optional SMTP auth user for authenticated SMTP only
 
 - `SMTP_PASSWORD`
-  Purpose: SMTP auth password
+  Purpose: optional SMTP auth password for authenticated SMTP only
 
 - `SMTP_FROM_EMAIL`
   Purpose: sender address for operational mail
 
 - `SMTP_REPLY_TO`
   Purpose: reply routing for outbound mail
+
+For Google Workspace SMTP relay:
+
+- use `SMTP_HOST=smtp-relay.gmail.com`
+- keep `SMTP_STARTTLS=true`
+- leave `SMTP_USERNAME` and `SMTP_PASSWORD` blank
+- allowlist the host provider egress IPs in Google Workspace SMTP relay settings
 
 ## Shopify production secrets
 

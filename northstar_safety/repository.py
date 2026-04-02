@@ -751,7 +751,13 @@ def launch_readiness_snapshot(connection) -> dict[str, Any]:
         },
         "smtp": {
             **smtp,
-            "notes": "SMTP is ready for real delivery." if smtp["configured"] else "SMTP is not configured yet. Set SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, and SMTP_FROM_EMAIL.",
+            "notes": (
+                "SMTP is ready for real delivery."
+                if smtp["configured"] and smtp["auth_enabled"]
+                else "SMTP relay is ready for real delivery without mailbox auth."
+                if smtp["configured"]
+                else "SMTP is not configured yet. Set SMTP_HOST and SMTP_FROM_EMAIL, then either add SMTP_USERNAME and SMTP_PASSWORD for authenticated SMTP or leave both blank for an allowlisted relay."
+            ),
         },
         "billing": {
             "required": settings.shopify_billing_required,
