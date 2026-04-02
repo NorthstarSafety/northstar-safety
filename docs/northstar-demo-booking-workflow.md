@@ -63,4 +63,11 @@ Within 30 minutes:
 - update the pipeline stage
 - log the main objection or buying signal
 - send the one-page and paid-pilot offer
-- ask for the next concrete step within 48 hours
+- if the answer is yes, send the live Stripe payment link immediately
+- use Stripe invoice only if the buyer asks for invoicing
+- ask for the next concrete step within 48 hours if they are not ready to pay on the call
+
+After a successful pilot:
+
+- send the live $149/month continuation link only after explicit agreement to continue
+- use Stripe invoice only if the buyer wants monthly invoicing

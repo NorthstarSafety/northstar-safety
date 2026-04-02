@@ -3,7 +3,7 @@
 <section class="page-hero">
   <p class="eyebrow">Pricing</p>
   <h1>Private pilot pricing</h1>
-  <p class="lede">Northstar is currently sold as a founder-led private pilot for one Shopify store selling child products.</p>
+  <p class="lede">Northstar is currently sold as a founder-led private pilot for one Shopify store selling child products. The goal is a low-risk first proof point, not a large rollout.</p>
 </section>
 
 <section class="pricing-grid">
@@ -20,9 +20,26 @@
       <li>Founder-led kickoff and one follow-up working session</li>
     </ul>
     <div class="button-row">
-      <a class="button" href="{{ demo_link }}">Book a private walkthrough</a>
-      <a class="button ghost" href="{{ app_install_url }}">Open install</a>
-      <a class="button ghost" href="/contact">Ask about fit</a>
+      <a class="button" href="{{ pilot_payment_link }}">Pay $300 by card</a>
+      <a class="button ghost" href="{{ demo_link }}">Book a private walkthrough</a>
+      <a class="button ghost" href="mailto:{{ sales_email }}?subject=Northstar%20Safety%20Pilot%20Invoice">Request a Stripe invoice</a>
+    </div>
+  </article>
+  <article class="pricing-card">
+    <p class="eyebrow">If the pilot works</p>
+    <h2>$149 per month</h2>
+    <p class="price-subline">Optional founding continuation for one Shopify store and up to 25 priority SKUs after pilot signoff</p>
+    <ul class="feature-list">
+      <li>One Shopify store in active scope</li>
+      <li>Up to 25 priority SKUs actively maintained</li>
+      <li>Ongoing evidence queue and reminder drafting</li>
+      <li>Official alert ingest and match review</li>
+      <li>Case summaries and action history</li>
+      <li>Started only with explicit written approval after the pilot</li>
+    </ul>
+    <div class="button-row">
+      <a class="button ghost" href="{{ demo_link }}">Talk through continuation</a>
+      <a class="button ghost" href="mailto:{{ sales_email }}?subject=Northstar%20Safety%20Continuation">Ask about monthly continuation</a>
     </div>
   </article>
   <article class="pricing-card">
@@ -36,7 +53,28 @@
       <li>Recall review is still manual</li>
     </ul>
     <p class="small muted">Northstar is not legal counsel, a lab, or an outsourced supplier-chasing service.</p>
-    <p class="small muted" style="margin-top: 12px;">Private pilots can be paid by secure card checkout or Stripe invoice now. If the pilot works, continuation pricing is discussed separately instead of being assumed up front.</p>
+    <p class="small muted" style="margin-top: 12px;">Private pilots can be paid by secure Stripe checkout or Stripe invoice now. If the pilot proves value, continuation is available at a founding rate of $149 per month, but only after the merchant explicitly agrees to continue.</p>
   </article>
+</section>
+
+<section class="public-section">
+  <div class="section-heading">
+    <p class="eyebrow">How payment works</p>
+    <h2>Simple and explicit</h2>
+  </div>
+  <div class="public-grid public-grid-3">
+    <article class="trust-card">
+      <strong>Step 1</strong>
+      <p class="small muted">Book a short walkthrough so Northstar can confirm the store and SKU scope are a fit.</p>
+    </article>
+    <article class="trust-card">
+      <strong>Step 2</strong>
+      <p class="small muted">Pay the $300 founding pilot by card or ask for a Stripe invoice if your team needs one.</p>
+    </article>
+    <article class="trust-card">
+      <strong>Step 3</strong>
+      <p class="small muted">Only if the pilot clearly works does Northstar send the separate $149 monthly continuation link.</p>
+    </article>
+  </div>
 </section>
 {% endblock %}

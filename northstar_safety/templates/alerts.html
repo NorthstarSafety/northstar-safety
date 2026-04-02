@@ -12,10 +12,24 @@
       <p class="eyebrow">Signal feed</p>
       <h3>Official recall and safety notices</h3>
     </div>
-    <form method="post" action="/actions/ingest-cpsc">
-      <button type="submit">Refresh official alerts</button>
-    </form>
+    <div class="topbar-actions">
+      <form method="get" class="inline-actions">
+        <input type="text" name="q" placeholder="Search title, source, hazard" value="{{ search }}">
+        <select name="severity">
+          <option value="" {% if not selected_severity %}selected{% endif %}>All severities</option>
+          <option value="critical" {% if selected_severity == 'critical' %}selected{% endif %}>Critical</option>
+          <option value="high" {% if selected_severity == 'high' %}selected{% endif %}>High</option>
+          <option value="medium" {% if selected_severity == 'medium' %}selected{% endif %}>Medium</option>
+          <option value="low" {% if selected_severity == 'low' %}selected{% endif %}>Low</option>
+        </select>
+        <button class="button ghost" type="submit">Filter</button>
+      </form>
+      <form method="post" action="/actions/ingest-cpsc">
+        <button type="submit">Refresh official alerts</button>
+      </form>
+    </div>
   </div>
+  <p class="small muted" style="margin: 0 0 18px 0;">If there is no active recall issue today, this page still matters because it shows the official review trail and the false positives your team already ruled out.</p>
   <div class="table-shell">
     <table>
       <thead>

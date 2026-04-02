@@ -12,11 +12,12 @@ Get a paid pilot from verbal yes to live kickoff with the least founder drag pos
 - confirm Northstar is an operations layer, not legal counsel
 - confirm the pilot term and price:
   - `$300 one-time` for the 30-day founding pilot
-  - continuation pricing discussed only if the pilot proves value
+  - if the pilot proves value, continuation is available at `$149/month`
+  - no automatic rollover into recurring billing
 
 ## Payment trigger
 
-- invoice or payment link sent
+- live Stripe payment link sent by default, or Stripe invoice if requested
 - merchant replies with billing approval
 - kickoff date tentatively held
 
@@ -45,9 +46,19 @@ Get a paid pilot from verbal yes to live kickoff with the least founder drag pos
 - at least one alert decision reviewed
 - first internal operator trained
 
+## Continuation checkpoint
+
+During the final week of the pilot:
+
+- review whether the first 10 priority SKUs are now easier to manage
+- confirm whether the merchant wants to keep Northstar live monthly
+- if yes, send the live continuation link or Stripe invoice
+- if no, close the pilot cleanly without moving the merchant to recurring billing
+
 ## What to send immediately after close
 
 - the paid-pilot offer
+- the live Stripe payment link, unless the buyer asked for an invoice
 - kickoff time options
 - Shopify access requirements
 - evidence packet request

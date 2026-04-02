@@ -12,14 +12,22 @@
       <p class="eyebrow">Evidence queue</p>
       <h3>Missing, stale, and review-needed items</h3>
     </div>
+    <form method="get" class="inline-actions">
+      <input type="hidden" name="status" value="{{ selected_status }}">
+      <input type="text" name="q" placeholder="Search product, requirement, vendor" value="{{ search }}">
+      <button class="button ghost" type="submit">Search</button>
+    </form>
     <div class="filters">
       {% if reminder_snapshot.product_count %}
       <a class="button ghost" href="/evidence/reminder-draft.txt">Download reminder draft</a>
+      <form method="post" action="/evidence/send-reminder">
+        <button class="button ghost" type="submit">Email reminder</button>
+      </form>
       {% endif %}
-      <a class="button {% if not selected_status %}ghost{% endif %}" href="/evidence">All</a>
-      <a class="button {% if selected_status != 'missing' %}ghost{% endif %}" href="/evidence?status=missing">Missing</a>
-      <a class="button {% if selected_status != 'stale' %}ghost{% endif %}" href="/evidence?status=stale">Stale</a>
-      <a class="button {% if selected_status != 'review' %}ghost{% endif %}" href="/evidence?status=review">Review</a>
+      <a class="button {% if not selected_status %}ghost{% endif %}" href="/evidence{% if search %}?q={{ search }}{% endif %}">All</a>
+      <a class="button {% if selected_status != 'missing' %}ghost{% endif %}" href="/evidence?status=missing{% if search %}&q={{ search }}{% endif %}">Missing</a>
+      <a class="button {% if selected_status != 'stale' %}ghost{% endif %}" href="/evidence?status=stale{% if search %}&q={{ search }}{% endif %}">Stale</a>
+      <a class="button {% if selected_status != 'review' %}ghost{% endif %}" href="/evidence?status=review{% if search %}&q={{ search }}{% endif %}">Review</a>
     </div>
   </div>
   {% if reminder_snapshot.product_count %}
@@ -62,5 +70,31 @@
     </div>
     {% endif %}
   </div>
+</section>
+
+<section class="panel" style="margin-top: 18px;">
+  <div class="panel-head">
+    <div>
+      <p class="eyebrow">Renewal watch</p>
+      <h3>Documents that will need refresh soon</h3>
+    </div>
+  </div>
+  {% if lifecycle_snapshot["items"] %}
+  <div class="timeline">
+    {% for item in lifecycle_snapshot["items"] %}
+    <div class="timeline-item">
+      <div class="small muted">{{ item.product_title }} | {{ item.doc_type }}</div>
+      <strong>{{ item.title }}</strong>
+      <div class="pill-row" style="margin-top: 8px;">
+        <span class="badge {{ item.status_tone }}">{{ item.status_label }}</span>
+        <span class="badge {{ item.lifecycle_tone }}">{{ item.expires_label }}</span>
+      </div>
+      <p class="small muted" style="margin-top: 8px;">{{ item.review_label }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">No document renewals are close enough to flag right now.</div>
+  {% endif %}
 </section>
 {% endblock %}

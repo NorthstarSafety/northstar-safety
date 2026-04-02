@@ -17,6 +17,7 @@
     {% for tag in product.tags %}
     <span class="pill" style="background: var(--panel-strong); color: var(--text);">{{ tag }}</span>
     {% endfor %}
+    <a class="button ghost" href="/products/{{ product.id }}/coverage-summary.txt">Download coverage summary</a>
   </div>
 </section>
 
@@ -171,11 +172,13 @@
           <strong>{{ document.title }}</strong>
           <div class="pill-row">
             <span class="badge {{ document.status_tone }}">{{ document.status_label }}</span>
+            <span class="badge {{ document.lifecycle_tone }}">{{ document.expires_label }}</span>
             {% if document.file_name %}
             <a class="button ghost small" href="/documents/{{ document.id }}/download">Download</a>
             {% endif %}
           </div>
           <p class="small">{{ document.notes or 'No notes added.' }}</p>
+          <p class="small muted" style="margin-top: 8px;">{{ document.review_label }}</p>
         </div>
         {% endfor %}
       </div>

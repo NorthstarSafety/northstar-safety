@@ -234,6 +234,29 @@ CREATE TABLE IF NOT EXISTS workspace_users (
     updated_at TEXT NOT NULL,
     last_login_at TEXT
 );
+
+CREATE TABLE IF NOT EXISTS workspace_invites (
+    id TEXT PRIMARY KEY,
+    token TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL,
+    role TEXT NOT NULL,
+    invited_by TEXT NOT NULL,
+    note TEXT,
+    status TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL,
+    accepted_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    id TEXT PRIMARY KEY,
+    token TEXT NOT NULL UNIQUE,
+    user_id TEXT NOT NULL REFERENCES workspace_users(id) ON DELETE CASCADE,
+    created_at TEXT NOT NULL,
+    expires_at TEXT NOT NULL,
+    used_at TEXT
+);
 """
 
 
@@ -399,4 +422,10 @@ def _apply_migrations(connection: DatabaseConnection) -> None:
     )
     connection.execute(
         "CREATE UNIQUE INDEX IF NOT EXISTS idx_workspace_users_email ON workspace_users(email)"
+    )
+    connection.execute(
+        "CREATE UNIQUE INDEX IF NOT EXISTS idx_workspace_invites_token ON workspace_invites(token)"
+    )
+    connection.execute(
+        "CREATE UNIQUE INDEX IF NOT EXISTS idx_password_reset_tokens_token ON password_reset_tokens(token)"
     )

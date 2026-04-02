@@ -47,6 +47,55 @@ def _parse_iso_datetime(value: str) -> datetime | None:
         return None
 
 
+def _document_lifecycle(document: dict[str, Any]) -> dict[str, Any]:
+    now = datetime.now(timezone.utc)
+    valid_until = _parse_iso_datetime(document.get("valid_until", ""))
+    verified_at = _parse_iso_datetime(document.get("verified_at", ""))
+    days_until_expiry = None
+    expires_label = "No expiry date"
+    lifecycle_code = "no_expiry"
+    lifecycle_tone = "neutral"
+
+    if valid_until:
+        days_until_expiry = (valid_until.date() - now.date()).days
+        if days_until_expiry < 0:
+            lifecycle_code = "expired"
+            lifecycle_tone = "danger"
+            expires_label = f"Expired {-days_until_expiry} days ago"
+        elif days_until_expiry <= 30:
+            lifecycle_code = "expiring_soon"
+            lifecycle_tone = "warning"
+            expires_label = f"Expires in {days_until_expiry} days"
+        else:
+            lifecycle_code = "current_window"
+            lifecycle_tone = "success"
+            expires_label = f"Expires in {days_until_expiry} days"
+    elif document.get("status") == "expired":
+        lifecycle_code = "expired"
+        lifecycle_tone = "danger"
+        expires_label = "Marked expired"
+
+    review_label = "No verified review date"
+    review_tone = "neutral"
+    if verified_at:
+        review_age_days = (now.date() - verified_at.date()).days
+        if review_age_days > 365:
+            review_label = f"Verified review is {review_age_days} days old"
+            review_tone = "warning"
+        else:
+            review_label = f"Verified review is {review_age_days} days old"
+            review_tone = "success"
+
+    return {
+        "days_until_expiry": days_until_expiry,
+        "expires_label": expires_label,
+        "lifecycle_code": lifecycle_code,
+        "lifecycle_tone": lifecycle_tone,
+        "review_label": review_label,
+        "review_tone": review_tone,
+    }
+
+
 def _setting_enabled(value: str | None, default: bool = False) -> bool:
     if value is None or value == "":
         return default
@@ -175,6 +224,7 @@ def _hydrate_documents(rows) -> list[dict[str, Any]]:
     for document in documents:
         document["status_label"] = DOCUMENT_STATUS_LABELS.get(document["status"], document["status"])
         document["status_tone"] = badge_tone(document["status"])
+        document.update(_document_lifecycle(document))
     return documents
 
 
@@ -366,7 +416,7 @@ def get_product_detail(connection, product_id: str) -> dict[str, Any] | None:
     }
 
 
-def list_evidence(connection, status: str = "", product_id: str = "") -> list[dict[str, Any]]:
+def list_evidence(connection, status: str = "", product_id: str = "", search: str = "") -> list[dict[str, Any]]:
     query = """
         SELECT e.*, p.title AS product_title, p.classification, d.title AS document_title, d.doc_type AS document_type
         FROM evidence_items e
@@ -381,6 +431,10 @@ def list_evidence(connection, status: str = "", product_id: str = "") -> list[di
     if product_id:
         query += " AND e.product_id = ?"
         params.append(product_id)
+    if search.strip():
+        query += " AND (lower(p.title) LIKE ? OR lower(e.title) LIKE ? OR lower(COALESCE(d.title, '')) LIKE ? OR lower(COALESCE(p.vendor, '')) LIKE ?)"
+        needle = f"%{search.strip().lower()}%"
+        params.extend([needle, needle, needle, needle])
     query += " ORDER BY CASE e.status WHEN 'missing' THEN 0 WHEN 'stale' THEN 1 WHEN 'review' THEN 2 ELSE 3 END, p.title, e.title"
     items = _dicts(connection.execute(query, params).fetchall())
     for item in items:
@@ -390,10 +444,8 @@ def list_evidence(connection, status: str = "", product_id: str = "") -> list[di
     return items
 
 
-def list_alerts(connection) -> list[dict[str, Any]]:
-    alerts = _dicts(
-        connection.execute(
-            """
+def list_alerts(connection, search: str = "", severity: str = "") -> list[dict[str, Any]]:
+    query = """
             SELECT a.*,
                 COUNT(DISTINCT CASE WHEN m.status != 'dismissed' THEN m.id END) AS match_count,
                 COUNT(DISTINCT CASE WHEN m.status = 'confirmed' THEN m.id END) AS confirmed_count,
@@ -402,10 +454,22 @@ def list_alerts(connection) -> list[dict[str, Any]]:
                 MAX(CASE WHEN m.status != 'dismissed' THEN CASE m.confidence WHEN 'high' THEN 3 WHEN 'medium' THEN 2 WHEN 'low' THEN 1 ELSE 0 END END) AS confidence_rank
             FROM alerts a
             LEFT JOIN matches m ON m.alert_id = a.id
+            WHERE 1 = 1
+    """
+    params: list[Any] = []
+    if search.strip():
+        needle = f"%{search.strip().lower()}%"
+        query += " AND (lower(a.title) LIKE ? OR lower(a.product_name) LIKE ? OR lower(a.hazard) LIKE ? OR lower(a.source_name) LIKE ?)"
+        params.extend([needle, needle, needle, needle])
+    if severity:
+        query += " AND a.severity = ?"
+        params.append(severity)
+    query += """
             GROUP BY a.id
             ORDER BY a.alert_date DESC, a.created_at DESC
-            """
-        ).fetchall()
+    """
+    alerts = _dicts(
+        connection.execute(query, params).fetchall()
     )
     confidence_lookup = {3: "high", 2: "medium", 1: "low", 0: "none"}
     for alert in alerts:
@@ -462,7 +526,7 @@ def get_alert_detail(connection, alert_id: str) -> dict[str, Any] | None:
     return {"alert": alert, "matches": matches, "summary": summary}
 
 
-def list_cases(connection, triage_status: str = "", product_id: str = "") -> list[dict[str, Any]]:
+def list_cases(connection, triage_status: str = "", product_id: str = "", search: str = "") -> list[dict[str, Any]]:
     query = """
         SELECT c.*, p.title AS product_title, p.classification, a.title AS alert_title, a.severity, a.source_name, a.alert_date
         FROM cases c
@@ -477,6 +541,10 @@ def list_cases(connection, triage_status: str = "", product_id: str = "") -> lis
     if product_id:
         query += " AND c.product_id = ?"
         params.append(product_id)
+    if search.strip():
+        needle = f"%{search.strip().lower()}%"
+        query += " AND (lower(p.title) LIKE ? OR lower(a.title) LIKE ? OR lower(c.owner) LIKE ? OR lower(c.decision) LIKE ?)"
+        params.extend([needle, needle, needle, needle])
     query += """
         ORDER BY
             CASE WHEN c.triage_status = 'closed' THEN 1 ELSE 0 END,
@@ -566,6 +634,28 @@ def evidence_reminder_snapshot(connection, limit: int = 6) -> dict[str, Any]:
         "products": products,
         "product_count": len(products),
         "item_count": total_items,
+    }
+
+
+def document_lifecycle_snapshot(connection, limit: int = 8) -> dict[str, Any]:
+    documents = _hydrate_documents(
+        connection.execute(
+            """
+            SELECT d.*, p.title AS product_title, p.vendor
+            FROM documents d
+            JOIN products p ON p.id = d.product_id
+            ORDER BY COALESCE(d.valid_until, '9999-12-31T00:00:00Z'), d.updated_at DESC
+            """
+        ).fetchall()
+    )
+    expiring = [
+        item
+        for item in documents
+        if item["lifecycle_code"] in {"expired", "expiring_soon"}
+    ][:limit]
+    return {
+        "items": expiring,
+        "count": len(expiring),
     }
 
 
@@ -694,7 +784,9 @@ def settings_snapshot(connection) -> dict[str, Any]:
     billing_snapshot = get_billing_snapshot(connection)
     automation = automation_snapshot(connection)
     evidence_reminders = evidence_reminder_snapshot(connection)
+    document_lifecycle = document_lifecycle_snapshot(connection)
     workspace_users = list_workspace_users(connection)
+    workspace_invites = list_workspace_invites(connection)
     launch_readiness = launch_readiness_snapshot(connection)
     contact_requests = _dicts(
         connection.execute(
@@ -727,7 +819,9 @@ def settings_snapshot(connection) -> dict[str, Any]:
         "billing_snapshot": billing_snapshot,
         "automation": automation,
         "evidence_reminders": evidence_reminders,
+        "document_lifecycle": document_lifecycle,
         "workspace_users": workspace_users,
+        "workspace_invites": workspace_invites,
         "launch_readiness": launch_readiness,
     }
 
@@ -1183,6 +1277,169 @@ def create_workspace_user(connection, *, email: str, full_name: str, role: str, 
     )
     connection.commit()
     return user_id
+
+
+def update_workspace_user_password(connection, *, user_id: str, password: str) -> None:
+    connection.execute(
+        "UPDATE workspace_users SET password_hash = ?, updated_at = ? WHERE id = ?",
+        (hash_password(password), now_iso(), user_id),
+    )
+    connection.commit()
+
+
+def create_workspace_invite(connection, *, email: str, role: str, invited_by: str, note: str = "", expires_in_days: int = 7) -> dict[str, Any]:
+    now = datetime.now(timezone.utc)
+    token = secrets.token_urlsafe(24)
+    invite = {
+        "id": make_id("invite"),
+        "token": token,
+        "email": email.strip().lower(),
+        "role": role.strip() or "operator",
+        "invited_by": invited_by.strip() or "Northstar Safety",
+        "note": note.strip(),
+        "status": "pending",
+        "created_at": now_iso(),
+        "updated_at": now_iso(),
+        "expires_at": (now + timedelta(days=expires_in_days)).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+    }
+    connection.execute(
+        """
+        INSERT INTO workspace_invites (id, token, email, role, invited_by, note, status, created_at, updated_at, expires_at, accepted_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)
+        """,
+        (
+            invite["id"],
+            invite["token"],
+            invite["email"],
+            invite["role"],
+            invite["invited_by"],
+            invite["note"],
+            invite["status"],
+            invite["created_at"],
+            invite["updated_at"],
+            invite["expires_at"],
+        ),
+    )
+    connection.commit()
+    return invite
+
+
+def list_workspace_invites(connection) -> list[dict[str, Any]]:
+    invites = _dicts(
+        connection.execute(
+            """
+            SELECT *
+            FROM workspace_invites
+            WHERE status = 'pending'
+            ORDER BY created_at DESC
+            """
+        ).fetchall()
+    )
+    now = datetime.now(timezone.utc)
+    for invite in invites:
+        expires_at = _parse_iso_datetime(invite["expires_at"])
+        invite["is_expired"] = bool(expires_at and expires_at < now)
+        invite["status_label"] = "Expired" if invite["is_expired"] else "Pending"
+        invite["status_tone"] = "warning" if invite["is_expired"] else "neutral"
+    return invites
+
+
+def get_workspace_invite(connection, token: str) -> dict[str, Any] | None:
+    row = connection.execute(
+        "SELECT * FROM workspace_invites WHERE token = ?",
+        (token,),
+    ).fetchone()
+    if not row:
+        return None
+    invite = dict(row)
+    expires_at = _parse_iso_datetime(invite["expires_at"])
+    invite["is_expired"] = bool(invite.get("accepted_at") or invite["status"] != "pending" or (expires_at and expires_at < datetime.now(timezone.utc)))
+    return invite
+
+
+def accept_workspace_invite(connection, *, token: str, full_name: str, password: str) -> dict[str, Any]:
+    invite = get_workspace_invite(connection, token)
+    if not invite:
+        raise ValueError("Invite link is invalid.")
+    if invite["is_expired"]:
+        raise ValueError("Invite link has expired.")
+    if _workspace_user_with_secret(connection, invite["email"]):
+        raise ValueError("A workspace user with this email already exists.")
+    user_id = create_workspace_user(connection, email=invite["email"], full_name=full_name, role=invite["role"], password=password)
+    connection.execute(
+        "UPDATE workspace_invites SET status = 'accepted', accepted_at = ?, updated_at = ? WHERE token = ?",
+        (now_iso(), now_iso(), token),
+    )
+    connection.commit()
+    return get_workspace_user(connection, user_id)
+
+
+def create_password_reset_token(connection, *, email: str, expires_in_hours: int = 4) -> dict[str, Any] | None:
+    user = _workspace_user_with_secret(connection, email)
+    if not user:
+        return None
+    now = datetime.now(timezone.utc)
+    token = secrets.token_urlsafe(24)
+    payload = {
+        "id": make_id("reset"),
+        "token": token,
+        "user_id": user["id"],
+        "created_at": now_iso(),
+        "expires_at": (now + timedelta(hours=expires_in_hours)).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+    }
+    connection.execute(
+        """
+        INSERT INTO password_reset_tokens (id, token, user_id, created_at, expires_at, used_at)
+        VALUES (?, ?, ?, ?, ?, NULL)
+        """,
+        (payload["id"], payload["token"], payload["user_id"], payload["created_at"], payload["expires_at"]),
+    )
+    connection.commit()
+    return payload
+
+
+def get_password_reset_token(connection, token: str) -> dict[str, Any] | None:
+    row = connection.execute(
+        """
+        SELECT prt.*, u.email, u.full_name
+        FROM password_reset_tokens prt
+        JOIN workspace_users u ON u.id = prt.user_id
+        WHERE prt.token = ?
+        """,
+        (token,),
+    ).fetchone()
+    if not row:
+        return None
+    payload = dict(row)
+    expires_at = _parse_iso_datetime(payload["expires_at"])
+    payload["is_expired"] = bool(payload.get("used_at") or (expires_at and expires_at < datetime.now(timezone.utc)))
+    return payload
+
+
+def reset_workspace_user_password(connection, *, token: str, password: str) -> dict[str, Any]:
+    reset_token = get_password_reset_token(connection, token)
+    if not reset_token:
+        raise ValueError("Reset link is invalid.")
+    if reset_token["is_expired"]:
+        raise ValueError("Reset link has expired.")
+    update_workspace_user_password(connection, user_id=reset_token["user_id"], password=password)
+    connection.execute(
+        "UPDATE password_reset_tokens SET used_at = ? WHERE token = ?",
+        (now_iso(), token),
+    )
+    connection.commit()
+    return get_workspace_user(connection, reset_token["user_id"])
+
+
+def change_workspace_user_password(connection, *, user_id: str, current_password: str, new_password: str) -> dict[str, Any]:
+    row = connection.execute("SELECT * FROM workspace_users WHERE id = ? AND status = 'active'", (user_id,)).fetchone()
+    if not row:
+        raise ValueError("Workspace user was not found.")
+    user = dict(row)
+    if not verify_password(current_password, user["password_hash"]):
+        raise ValueError("Current password is incorrect.")
+    update_workspace_user_password(connection, user_id=user_id, password=new_password)
+    return get_workspace_user(connection, user_id)
 
 
 def authenticate_workspace_user(connection, *, email: str, password: str) -> dict[str, Any] | None:

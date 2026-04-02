@@ -1,5 +1,7 @@
 # Northstar Safety Phase 7 Memo
 
+Historical note: this memo reflects an earlier pilot structure. The current live founding pilot is $300 one-time for 30 days and the first 10 priority SKUs.
+
 ## What changed
 
 Phase 7 moved Northstar from "ready to sell" to "ready to run founder-led outbound."

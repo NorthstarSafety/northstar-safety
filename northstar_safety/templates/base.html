@@ -36,6 +36,7 @@
           <span class="badge neutral">{{ current_user.full_name }}</span>
           <span class="badge neutral">{{ current_user.role|capitalize }}</span>
         </div>
+        <p class="small muted" style="margin-top: 10px;">Signed in as {{ current_user.email }}</p>
         <form method="post" action="/logout" style="margin-top: 12px;">
           <button class="button ghost small" type="submit">Sign out</button>
         </form>
@@ -43,8 +44,10 @@
         <p class="small muted" style="margin-top: 12px;">Named operator sign-in is not set up yet. Create the first workspace user in Settings before launch.</p>
         {% endif %}
         <div class="button-row" style="margin-top: 12px;">
+          <a class="button ghost small" href="/settings">Account settings</a>
           <a class="button ghost small" href="/">Public site</a>
         </div>
+        <p class="small muted" style="margin-top: 12px;">Need help? <a href="mailto:{{ runtime_settings.public_support_email }}">{{ runtime_settings.public_support_email }}</a></p>
       </div>
     </aside>
 

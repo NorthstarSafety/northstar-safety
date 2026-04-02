@@ -42,9 +42,20 @@ Use this line:
 
 Once they say yes:
 
-- send the founding-pilot invoice
+- send the live Stripe payment link first: https://buy.stripe.com/14A9AU7Sl22v8TjcvL8ww00
+- switch to Stripe invoice only if the buyer asks for invoicing
 - send [northstar-pilot-onboarding-checklist.md](C:/Users/onkha/OneDrive/Documents/New%20project/docs/northstar-pilot-onboarding-checklist.md)
 - hold kickoff time within 5 business days
+
+### 6. Pilot closeout and continuation
+
+In the final week of the pilot:
+
+- review what changed on the first 10 priority SKUs
+- confirm whether the team wants to keep Northstar live monthly
+- if yes, send the recurring continuation link: https://buy.stripe.com/eVqbJ27SlgXpb1r0N38ww01
+- use Stripe invoice only if the buyer wants monthly invoicing instead of checkout
+- do not move anyone to recurring billing without explicit written agreement
 
 ## Common stall points
 

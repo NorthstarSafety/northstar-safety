@@ -48,7 +48,8 @@ Get access to:
 
 If billing is still blocked:
 
-- invoice the pilot directly
+- use the live $300 Stripe payment link first
+- send a Stripe invoice only if the buyer asks for invoicing
 - keep the pricing page honest
 - continue onboarding pilots while the Partner-managed app finishes cutover
 
@@ -66,4 +67,13 @@ If App Store approval is still pending:
 
 - sell private pilots directly
 - use the install page and external workspace
-- bill by invoice until Shopify-native billing is available on the production app
+- collect the founding pilot through the live Stripe checkout link and use Stripe invoice only as fallback until Shopify-native billing is available on the production app
+
+## First continuation upgrade
+
+When a pilot customer explicitly agrees to continue:
+
+- send the live $149/month continuation link: https://buy.stripe.com/eVqbJ27SlgXpb1r0N38ww01
+- use Stripe invoice only if the merchant asks for monthly invoicing
+- do not auto-roll the pilot into recurring billing
+- keep Shopify billing as the later path, not the blocker for first retention revenue

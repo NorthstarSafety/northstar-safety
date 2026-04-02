@@ -18,10 +18,11 @@
       <label style="grid-column: 1 / -1;">Website<input type="url" name="website" placeholder="https://"></label>
       <label style="grid-column: 1 / -1;">What feels manual today?<textarea name="message" required placeholder="For example: supplier documents are scattered, recall review is ad hoc, or we cannot see missing evidence by SKU."></textarea></label>
       <div class="button-row" style="grid-column: 1 / -1;">
-        <button type="submit">Save request</button>
+        <button type="submit">Send request</button>
         <a class="button ghost" href="{{ demo_link }}">Email instead</a>
       </div>
     </form>
+    <p class="small muted" style="margin-top: 14px;">Northstar will follow up from {{ sales_email }} or {{ support_email }}. The typical next step is a 15-minute walkthrough.</p>
   </article>
   <article class="feature-card">
     <p class="eyebrow">Best fit</p>

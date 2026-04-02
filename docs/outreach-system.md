@@ -48,6 +48,7 @@ Prioritize brands that look like:
 - `demo_booked`
 - `demo_complete`
 - `pilot_discussion`
+- `payment_link_sent`
 - `invoice_sent`
 - `closed_won`
 - `closed_lost`
@@ -157,7 +158,7 @@ founder@northstarsafetyapp.com
 - Where are certificates and supplier documents currently stored?
 - How do you review official safety notices today?
 - What creates the most drag right now: missing documents, recall review, or internal follow-through?
-- What would make a 45-day pilot clearly worth paying for?
+- What would make a 30-day founding pilot clearly worth paying for?
 
 ## Close motion
 
@@ -166,4 +167,5 @@ founder@northstarsafetyapp.com
 3. Show one alert with dismissed false positives.
 4. Show one case with a written action trail.
 5. Explain the founding pilot.
-6. Ask for the first 25 SKUs and evidence packet.
+6. Ask for the first 10 priority SKUs and evidence packet.
+7. If they say yes, send the live Stripe payment link immediately and hold kickoff. Use invoice only if they ask for it.

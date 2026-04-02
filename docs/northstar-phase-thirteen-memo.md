@@ -63,7 +63,8 @@ That should make the next conversations sharper.
 
 ### On first verbal yes
 
-- send the invoice from [invoice-payment-link-template.md](C:/Users/onkha/OneDrive/Documents/New%20project/docs/invoice-payment-link-template.md)
+- send the live Stripe payment link from [invoice-payment-link-template.md](C:/Users/onkha/OneDrive/Documents/New%20project/docs/invoice-payment-link-template.md)
+- switch to Stripe invoice only if the buyer asks for invoice-based approval
 - send the kickoff note from [pilot-kickoff-email.md](C:/Users/onkha/OneDrive/Documents/New%20project/docs/pilot-kickoff-email.md)
 - hold kickoff within 5 business days
 

@@ -105,7 +105,7 @@
       <div class="panel-head">
         <div>
           <p class="eyebrow">Log note</p>
-      <h3>Add a timeline note</h3>
+          <h3>Add a timeline note</h3>
         </div>
       </div>
       <form method="post" action="/cases/{{ case.id }}/events" class="form-grid">
@@ -124,6 +124,22 @@
           <button type="submit">Add log entry</button>
         </div>
       </form>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Shareable summary</p>
+          <h3>Email this case summary</h3>
+        </div>
+      </div>
+      <form method="post" action="/cases/{{ case.id }}/share" class="form-grid">
+        <label style="grid-column: 1 / -1;">Recipient email<input type="email" name="to_email" placeholder="supplier@company.com" required></label>
+        <div class="button-row" style="grid-column: 1 / -1;">
+          <button type="submit">Send summary by email</button>
+        </div>
+      </form>
+      <p class="small muted" style="margin-top: 12px;">Use this when a supplier, retailer, or internal stakeholder needs the current written state without opening the workspace.</p>
     </div>
   </div>
 </section>

@@ -103,4 +103,4 @@ Point out:
 
 Finish with:
 
-"The founding pilot is intentionally narrow: one store, first 10 priority SKUs, 30 days, and a clear decision point. If the workflow is real for your team, the next step is to connect the store, upload the first evidence packet, and prove the workflow on your live catalog."
+"The founding pilot is intentionally narrow: one store, first 10 priority SKUs, 30 days, and a clear decision point. If the workflow is real for your team, the next step is simple: I send the $300 secure checkout link today, we hold kickoff, and then we prove the workflow on your live catalog. If it clearly earns its place, the continuation step is a separate opt-in at $149 per month for one store and up to 25 priority SKUs."

@@ -2,6 +2,8 @@
 
 Date: 2026-03-29
 
+Historical note: this memo reflects an earlier pilot structure. The current live founding pilot is $300 one-time for 30 days and the first 10 priority SKUs.
+
 ## What was fixed
 
 ### 1. First paid pilot readiness

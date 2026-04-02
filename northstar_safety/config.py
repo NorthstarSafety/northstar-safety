@@ -54,8 +54,8 @@ class Settings:
     shopify_embedded_app: bool = _flag("SHOPIFY_EMBEDDED_APP", False)
     shopify_install_redirect_path: str = os.getenv("SHOPIFY_INSTALL_REDIRECT_PATH", "/workspace")
     shopify_billing_required: bool = _flag("SHOPIFY_BILLING_REQUIRED", False)
-    shopify_billing_plan_name: str = os.getenv("SHOPIFY_BILLING_PLAN_NAME", "Northstar Safety Founding Plan")
-    shopify_billing_price_usd: float = float(os.getenv("SHOPIFY_BILLING_PRICE_USD", "249"))
+    shopify_billing_plan_name: str = os.getenv("SHOPIFY_BILLING_PLAN_NAME", "Northstar Safety Founding Continuation")
+    shopify_billing_price_usd: float = float(os.getenv("SHOPIFY_BILLING_PRICE_USD", "149"))
     shopify_billing_interval: str = os.getenv("SHOPIFY_BILLING_INTERVAL", "EVERY_30_DAYS")
     shopify_billing_trial_days: int = int(os.getenv("SHOPIFY_BILLING_TRIAL_DAYS", "14"))
     shopify_billing_return_path: str = os.getenv("SHOPIFY_BILLING_RETURN_PATH", "/billing/confirm")
@@ -67,6 +67,14 @@ class Settings:
     public_demo_link: str = os.getenv(
         "PUBLIC_DEMO_LINK",
         "mailto:founder@northstarsafetyapp.com?subject=Northstar%20Safety%20Demo",
+    )
+    public_pilot_payment_link: str = os.getenv(
+        "PUBLIC_PILOT_PAYMENT_LINK",
+        "https://buy.stripe.com/14A9AU7Sl22v8TjcvL8ww00",
+    )
+    public_continuation_payment_link: str = os.getenv(
+        "PUBLIC_CONTINUATION_PAYMENT_LINK",
+        "https://buy.stripe.com/eVqbJ27SlgXpb1r0N38ww01",
     )
     public_app_install_url: str = os.getenv("PUBLIC_APP_INSTALL_URL", "")
     public_company_location: str = os.getenv("PUBLIC_COMPANY_LOCATION", "United States")

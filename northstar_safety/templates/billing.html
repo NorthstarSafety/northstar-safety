@@ -3,9 +3,14 @@
 {% block content %}
 <section class="guide-callout">
   <p class="eyebrow">Commercial path</p>
-  <h3>Use Shopify billing only after the founding pilot proves the workflow and Northstar is ready for an ongoing plan.</h3>
-  <p class="small muted">Northstar's founding pilot is currently sold directly as a one-time payment. Shopify billing stays in the product as the later path for an ongoing plan once pricing and app readiness are fully settled.</p>
-  <p class="small muted">If Shopify billing is still blocked by app ownership, Northstar can keep selling paid pilots through direct invoicing until the final Partner-managed app is live.</p>
+  <h3>Use direct Stripe for the pilot now, then switch to the monthly continuation link only after explicit pilot signoff.</h3>
+  <p class="small muted">Northstar's founding pilot is sold directly as a $300 one-time payment. If the pilot proves value, the founder can move the merchant onto the $149 per month founding continuation without waiting for Shopify billing readiness.</p>
+  <p class="small muted">There is no automatic rollover from pilot to recurring billing. Send the continuation link only after the merchant agrees to continue for one store and up to 25 priority SKUs.</p>
+  <div class="button-row" style="margin-top: 16px;">
+    <a class="button" href="{{ pilot_payment_link }}">Pay $300 by card</a>
+    <a class="button ghost" href="{{ continuation_payment_link }}">Start $149/mo continuation</a>
+    <a class="button ghost" href="mailto:{{ runtime_settings.public_sales_email }}?subject=Northstar%20Safety%20Pilot%20Invoice">Request a Stripe invoice</a>
+  </div>
 </section>
 
 <section class="grid-2">
@@ -49,7 +54,7 @@
     {% else %}
     <div class="timeline-item">
       <strong>{{ billing.billing_plan_name }}</strong>
-      <p class="small" style="margin-top: 8px;">Northstar can create a Shopify recurring subscription later if the pilot expands into an ongoing plan and the app is fully eligible to bill through Shopify.</p>
+      <p class="small" style="margin-top: 8px;">Northstar can create a Shopify recurring subscription later if the pilot expands into an ongoing plan and the app is fully eligible to bill through Shopify. Until then, the live continuation path is the direct Stripe monthly link at $149 per month.</p>
       <form method="post" action="/billing/start" style="margin-top: 12px;">
         <button type="submit">Start Shopify billing flow</button>
       </form>

@@ -45,10 +45,10 @@ Northstar turns those steps into one monthly workflow.
 - one internal owner
 - first 10 priority SKUs in active rollout scope
 - founder-led onboarding
-- direct invoicing during private pilots
 - $300 one-time for a 30-day founding pilot
+- secure Stripe checkout by default, with Stripe invoice available on request
 
-If the pilot proves the workflow, Northstar can propose a continuation plan later. The pilot itself is intentionally a one-time payment.
+If the pilot proves the workflow, Northstar can continue at a founding rate of **$149 per month** for one store and up to **25 priority SKUs** in active scope. That continuation is a separate opt-in step, not an automatic rollover from the pilot.
 
 ## Best-fit merchant
 

@@ -26,17 +26,24 @@ from .domain import CASE_STATUS_LABELS, DOCUMENT_STATUS_LABELS
 from .mailer import send_plain_email, smtp_ready
 from .repository import (
     add_document,
+    accept_workspace_invite,
+    change_workspace_user_password,
     authenticate_workspace_user,
     automation_snapshot,
     append_case_event,
+    create_password_reset_token,
+    create_workspace_invite,
     create_workspace_user,
     create_contact_request,
     dashboard_snapshot,
+    document_lifecycle_snapshot,
     evidence_reminder_snapshot,
     effective_shopify_config,
     get_alert_detail,
     get_case_detail,
+    get_password_reset_token,
     get_product_detail,
+    get_workspace_invite,
     get_workspace_user,
     launch_readiness_snapshot,
     list_alerts,
@@ -47,6 +54,7 @@ from .repository import (
     list_workspace_users,
     mark_shop_uninstalled,
     record_compliance_webhook,
+    reset_workspace_user_password,
     set_setting,
     settings_snapshot,
     update_case,
@@ -82,6 +90,7 @@ PUBLIC_PATHS = {
     "/contact",
     "/privacy",
     "/terms",
+    "/reset-password",
     "/auth/callback",
     "/auth/shopify/callback",
     "/billing/confirm",
@@ -92,9 +101,9 @@ PUBLIC_PATHS = {
     "/webhooks/shopify/compliance",
     "/webhooks/shopify/app-uninstalled",
 }
-PUBLIC_PREFIXES = ("/static/",)
-WORKSPACE_PREFIXES = ("/workspace", "/products", "/evidence", "/alerts", "/cases", "/settings", "/billing")
-SESSION_FREE_PATHS = {"/login"}
+PUBLIC_PREFIXES = ("/static/", "/reset-password/", "/accept-invite/")
+WORKSPACE_PREFIXES = ("/workspace", "/products", "/evidence", "/alerts", "/cases", "/settings", "/billing", "/account")
+SESSION_FREE_PATHS = {"/login", "/reset-password"}
 
 
 def _flash_payload(request: Request) -> dict[str, str] | None:
@@ -124,6 +133,8 @@ def _public_context(request: Request, active_page: str) -> dict[str, str]:
         "support_email": settings.public_support_email,
         "sales_email": settings.public_sales_email,
         "demo_link": settings.public_demo_link,
+        "pilot_payment_link": settings.public_pilot_payment_link,
+        "continuation_payment_link": settings.public_continuation_payment_link,
         "public_base_url": public_base_url,
         "app_install_url": settings.public_app_install_url or f"{public_base_url}/install",
         "company_location": settings.public_company_location,
@@ -142,8 +153,11 @@ def _render(request: Request, template_name: str, active_page: str, **context):
         "app_name": settings.app_name,
         "active_page": active_page,
         "flash": _flash_payload(request),
+        "public_base_url": _request_public_base_url(request),
         "workspace_settings": workspace_settings,
         "runtime_settings": settings,
+        "pilot_payment_link": settings.public_pilot_payment_link,
+        "continuation_payment_link": settings.public_continuation_payment_link,
         "basic_auth_enabled": bool(settings.basic_auth_username and settings.basic_auth_password),
         "case_status_labels": CASE_STATUS_LABELS,
         "document_status_labels": DOCUMENT_STATUS_LABELS,
@@ -170,6 +184,10 @@ def _render_public(request: Request, template_name: str, active_page: str, **con
 def _redirect(path: str, message: str, level: str = "success") -> RedirectResponse:
     safe_message = quote_plus(message)
     return RedirectResponse(url=f"{path}?flash={safe_message}&level={level}", status_code=303)
+
+
+def _absolute_url(request: Request, path: str) -> str:
+    return f"{_request_public_base_url(request).rstrip('/')}{path}"
 
 
 def _case_summary_text(case: dict[str, str], events: list[dict[str, str]]) -> str:
@@ -243,6 +261,40 @@ def _evidence_reminder_text(snapshot: dict[str, object]) -> str:
             "Northstar Safety",
         ]
     )
+    return "\n".join(lines)
+
+
+def _product_coverage_text(detail: dict[str, object]) -> str:
+    product = detail["product"]
+    evidence = detail["evidence"]
+    documents = detail["documents"]
+    matches = detail["matches"]
+    lines = [
+        "Northstar Safety Product Coverage Summary",
+        "",
+        f"Product: {product['title']}",
+        f"Vendor: {product['vendor']}",
+        f"Classification: {product['classification_label']}",
+        f"Jurisdiction scope: {product['jurisdiction_scope']}",
+        f"Readiness score: {detail['readiness_score']}%",
+        "",
+        "Evidence checklist",
+    ]
+    for item in evidence:
+        lines.append(f"- {item['title']}: {item['status_label']} | {item['document_title'] or 'No document attached'}")
+    lines.extend(["", "Documents on file"])
+    if documents:
+        for document in documents:
+            lines.append(f"- {document['title']} ({document['doc_type']}) | {document['status_label']} | {document['expires_label']}")
+    else:
+        lines.append("- No documents attached yet.")
+    lines.extend(["", "Matched alerts"])
+    if matches:
+        for match in matches:
+            lines.append(f"- {match['alert_title']} | {match['status_label']} | {match['confidence'].capitalize()} confidence")
+    else:
+        lines.append("- No active alert matches.")
+    lines.append("")
     return "\n".join(lines)
 
 
@@ -333,6 +385,13 @@ def _workspace_session_name(request: Request, fallback: str = "Operator") -> str
     current_user = _workspace_session_user(request)
     if current_user and current_user.get("full_name"):
         return current_user["full_name"]
+    return fallback
+
+
+def _workspace_session_email(request: Request, fallback: str = "") -> str:
+    current_user = _workspace_session_user(request)
+    if current_user and current_user.get("email"):
+        return current_user["email"]
     return fallback
 
 
@@ -620,6 +679,120 @@ def create_app() -> FastAPI:
         _clear_workspace_session(response)
         return response
 
+    @app.get("/reset-password")
+    async def request_password_reset_page(request: Request):
+        return templates.TemplateResponse(
+            "reset_password_request.html",
+            {
+                "request": request,
+                "app_name": settings.app_name,
+                "flash": _flash_payload(request),
+            },
+        )
+
+    @app.post("/reset-password")
+    async def request_password_reset(request: Request, email: str = Form(...)):
+        with get_connection() as connection:
+            reset_token = create_password_reset_token(connection, email=email)
+        if reset_token and smtp_ready():
+            reset_url = _absolute_url(request, f"/reset-password/{reset_token['token']}")
+            try:
+                send_plain_email(
+                    to_email=email.strip(),
+                    subject="Reset your Northstar workspace password",
+                    body=(
+                        "Northstar received a password reset request for this workspace user.\n\n"
+                        f"Open this link to choose a new password:\n{reset_url}\n\n"
+                        "This link expires in 4 hours. If you did not request this reset, you can ignore this message."
+                    ),
+                    reply_to=settings.public_support_email,
+                )
+            except Exception as exc:
+                return _redirect("/reset-password", f"Password reset email failed: {exc}", "error")
+        return _redirect(
+            "/reset-password",
+            "If a matching workspace user exists, Northstar prepared the reset flow. Check the inbox or ask an admin for a fresh invite.",
+        )
+
+    @app.get("/reset-password/{token}")
+    async def reset_password_page(request: Request, token: str):
+        with get_connection() as connection:
+            reset_token = get_password_reset_token(connection, token)
+        if not reset_token or reset_token["is_expired"]:
+            return _redirect("/reset-password", "That reset link is no longer valid. Request a new one.", "error")
+        return templates.TemplateResponse(
+            "reset_password_form.html",
+            {
+                "request": request,
+                "app_name": settings.app_name,
+                "flash": _flash_payload(request),
+                "token": token,
+                "user_email": reset_token["email"],
+            },
+        )
+
+    @app.post("/reset-password/{token}")
+    async def reset_password_submit(token: str, password: str = Form(...), confirm_password: str = Form(...)):
+        if password != confirm_password:
+            return _redirect(f"/reset-password/{token}", "The two passwords do not match.", "error")
+        strength_error = password_strength_error(password)
+        if strength_error:
+            return _redirect(f"/reset-password/{token}", strength_error, "error")
+        try:
+            with get_connection() as connection:
+                reset_workspace_user_password(connection, token=token, password=password)
+        except Exception as exc:
+            return _redirect("/reset-password", str(exc), "error")
+        return _redirect("/login", "Password updated. You can sign in now.")
+
+    @app.get("/accept-invite/{token}")
+    async def accept_invite_page(request: Request, token: str):
+        with get_connection() as connection:
+            invite = get_workspace_invite(connection, token)
+        if not invite or invite["is_expired"]:
+            return _redirect("/login", "That invite link is no longer valid. Ask Northstar for a fresh invite.", "error")
+        return templates.TemplateResponse(
+            "accept_invite.html",
+            {
+                "request": request,
+                "app_name": settings.app_name,
+                "flash": _flash_payload(request),
+                "token": token,
+                "invite": invite,
+            },
+        )
+
+    @app.post("/accept-invite/{token}")
+    async def accept_invite_submit(token: str, full_name: str = Form(...), password: str = Form(...), confirm_password: str = Form(...)):
+        if password != confirm_password:
+            return _redirect(f"/accept-invite/{token}", "The two passwords do not match.", "error")
+        strength_error = password_strength_error(password)
+        if strength_error:
+            return _redirect(f"/accept-invite/{token}", strength_error, "error")
+        try:
+            with get_connection() as connection:
+                accept_workspace_invite(connection, token=token, full_name=full_name, password=password)
+        except Exception as exc:
+            return _redirect("/login", str(exc), "error")
+        return _redirect("/login", "Invite accepted. Sign in with your new workspace account.")
+
+    @app.post("/account/password")
+    async def change_password(request: Request, current_password: str = Form(...), password: str = Form(...), confirm_password: str = Form(...)):
+        current_user = _workspace_session_user(request)
+        if not current_user:
+            return _redirect("/login", "Sign in before changing the password.", "error")
+        if password != confirm_password:
+            return _redirect("/settings", "The new passwords do not match.", "error")
+        strength_error = password_strength_error(password)
+        if strength_error:
+            return _redirect("/settings", strength_error, "error")
+        try:
+            with get_connection() as connection:
+                change_workspace_user_password(connection, user_id=current_user["id"], current_password=current_password, new_password=password)
+        except Exception as exc:
+            return _redirect("/settings", str(exc), "error")
+        return _redirect("/settings", "Password updated for the current workspace user.")
+
     @app.get("/auth/callback")
     @app.get("/auth/shopify/callback")
     async def auth_callback(request: Request):
@@ -753,6 +926,17 @@ def create_app() -> FastAPI:
             return _redirect("/products", "Product not found", "error")
         return _render(request, "product_detail.html", active_page="products", **detail)
 
+    @app.get("/products/{product_id}/coverage-summary.txt")
+    async def product_coverage_download(product_id: str):
+        with get_connection() as connection:
+            detail = get_product_detail(connection, product_id)
+        if not detail:
+            return _redirect("/products", "Product not found", "error")
+        return PlainTextResponse(
+            _product_coverage_text(detail),
+            headers={"Content-Disposition": f'attachment; filename="northstar-product-{product_id}.txt"'},
+        )
+
     @app.post("/products/{product_id}/documents")
     async def product_add_document(
         product_id: str,
@@ -814,10 +998,11 @@ def create_app() -> FastAPI:
         return _redirect(f"/products/{product_id}", "Compliance profile updated")
 
     @app.get("/evidence")
-    async def evidence(request: Request, status: str = ""):
+    async def evidence(request: Request, status: str = "", q: str = ""):
         with get_connection() as connection:
-            evidence_rows = list_evidence(connection, status=status)
+            evidence_rows = list_evidence(connection, status=status, search=q)
             reminder_snapshot = evidence_reminder_snapshot(connection)
+            lifecycle_snapshot = document_lifecycle_snapshot(connection)
             reminder_snapshot["contact_email"] = list_settings(connection).get("reminder_contact_email", "").strip() or settings.public_support_email
         return _render(
             request,
@@ -825,7 +1010,9 @@ def create_app() -> FastAPI:
             active_page="evidence",
             evidence_rows=evidence_rows,
             selected_status=status,
+            search=q,
             reminder_snapshot=reminder_snapshot,
+            lifecycle_snapshot=lifecycle_snapshot,
         )
 
     @app.get("/evidence/reminder-draft.txt")
@@ -838,11 +1025,32 @@ def create_app() -> FastAPI:
             headers={"Content-Disposition": 'attachment; filename="northstar-evidence-reminder.txt"'},
         )
 
-    @app.get("/alerts")
-    async def alerts(request: Request):
+    @app.post("/evidence/send-reminder")
+    async def evidence_send_reminder(request: Request, to_email: str = Form("")):
+        if not smtp_ready():
+            return _redirect("/settings", "SMTP is not configured yet, so Northstar can only generate a reminder draft.", "error")
         with get_connection() as connection:
-            alert_rows = list_alerts(connection)
-        return _render(request, "alerts.html", active_page="alerts", alert_rows=alert_rows)
+            reminder_snapshot = evidence_reminder_snapshot(connection)
+            default_to = list_settings(connection).get("reminder_contact_email", "").strip() or settings.public_support_email
+        if not reminder_snapshot["item_count"]:
+            return _redirect("/evidence", "No reminder email is needed right now because there are no missing or stale items.", "warning")
+        recipient = to_email.strip() or default_to
+        try:
+            send_plain_email(
+                to_email=recipient,
+                subject="Northstar evidence reminder",
+                body=_evidence_reminder_text({**reminder_snapshot, "contact_email": recipient}),
+                reply_to=_workspace_session_email(request, settings.public_support_email),
+            )
+        except Exception as exc:
+            return _redirect("/settings", f"Reminder email failed: {exc}", "error")
+        return _redirect("/evidence", f"Reminder email sent to {recipient}")
+
+    @app.get("/alerts")
+    async def alerts(request: Request, q: str = "", severity: str = ""):
+        with get_connection() as connection:
+            alert_rows = list_alerts(connection, search=q, severity=severity)
+        return _render(request, "alerts.html", active_page="alerts", alert_rows=alert_rows, search=q, selected_severity=severity)
 
     @app.get("/alerts/{alert_id}")
     async def alert_detail(request: Request, alert_id: str):
@@ -853,10 +1061,10 @@ def create_app() -> FastAPI:
         return _render(request, "alert_detail.html", active_page="alerts", **detail)
 
     @app.get("/cases")
-    async def cases(request: Request, status: str = ""):
+    async def cases(request: Request, status: str = "", q: str = ""):
         with get_connection() as connection:
-            case_rows = list_cases(connection, triage_status=status)
-        return _render(request, "cases.html", active_page="cases", case_rows=case_rows, selected_status=status)
+            case_rows = list_cases(connection, triage_status=status, search=q)
+        return _render(request, "cases.html", active_page="cases", case_rows=case_rows, selected_status=status, search=q)
 
     @app.get("/cases/{case_id}")
     async def case_detail(request: Request, case_id: str):
@@ -876,6 +1084,26 @@ def create_app() -> FastAPI:
             _case_summary_text(detail["case"], detail["events"]),
             headers={"Content-Disposition": f'attachment; filename="northstar-case-{case_id}.txt"'},
         )
+
+    @app.post("/cases/{case_id}/share")
+    async def case_share(request: Request, case_id: str, to_email: str = Form(...)):
+        if not smtp_ready():
+            return _redirect("/settings", "SMTP is not configured yet, so Northstar cannot send a case summary by email.", "error")
+        with get_connection() as connection:
+            detail = get_case_detail(connection, case_id)
+        if not detail:
+            return _redirect("/cases", "Case not found", "error")
+        summary_text = _case_summary_text(detail["case"], detail["events"])
+        try:
+            send_plain_email(
+                to_email=to_email.strip(),
+                subject=f"Northstar case summary | {detail['case']['product_title']}",
+                body=summary_text,
+                reply_to=_workspace_session_email(request, settings.public_support_email),
+            )
+        except Exception as exc:
+            return _redirect(f"/cases/{case_id}", f"Case summary email failed: {exc}", "error")
+        return _redirect(f"/cases/{case_id}", f"Case summary sent to {to_email.strip()}")
 
     @app.post("/cases/{case_id}/status")
     async def case_update(
@@ -1028,6 +1256,34 @@ def create_app() -> FastAPI:
         except Exception as exc:
             return _redirect("/settings", f"User setup failed: {exc}", "error")
         return _redirect("/settings", "Workspace user created")
+
+    @app.post("/settings/invites")
+    async def create_invite(request: Request, email: str = Form(...), role: str = Form("operator"), note: str = Form("")):
+        with get_connection() as connection:
+            invite = create_workspace_invite(
+                connection,
+                email=email,
+                role=role,
+                invited_by=_workspace_session_name(request, settings.public_company_name),
+                note=note,
+            )
+        invite_url = _absolute_url(request, f"/accept-invite/{invite['token']}")
+        if smtp_ready():
+            try:
+                send_plain_email(
+                    to_email=invite["email"],
+                    subject="Northstar workspace invite",
+                    body=(
+                        f"You were invited to the Northstar Safety workspace as a {invite['role']}.\n\n"
+                        f"Open this link to create the password and sign in:\n{invite_url}\n\n"
+                        "This link expires in 7 days."
+                        + (f"\n\nNote from the inviter:\n{invite['note']}" if invite["note"] else "")
+                    ),
+                    reply_to=_workspace_session_email(request, settings.public_support_email),
+                )
+            except Exception as exc:
+                return _redirect("/settings", f"Invite created, but the email failed: {exc}. Copy the invite link from the pending invites list.", "warning")
+        return _redirect("/settings", "Workspace invite created")
 
     @app.post("/settings/test-email")
     async def send_test_email(test_email: str = Form("")):

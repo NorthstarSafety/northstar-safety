@@ -21,7 +21,7 @@
       </a>
       <nav class="public-nav" aria-label="Primary">
         <a href="/" {% if active_public_page == 'home' %}aria-current="page"{% endif %}>Home</a>
-        <a href="/product" {% if active_public_page == 'product' %}aria-current="page"{% endif %}>Platform</a>
+        <a href="/product" {% if active_public_page == 'product' %}aria-current="page"{% endif %}>Product</a>
         <a href="/pricing" {% if active_public_page == 'pricing' %}aria-current="page"{% endif %}>Pricing</a>
         <a href="/shopify" {% if active_public_page == 'shopify' %}aria-current="page"{% endif %}>Shopify</a>
         <a href="/security" {% if active_public_page == 'security' %}aria-current="page"{% endif %}>Security</a>
@@ -29,7 +29,7 @@
         <a href="/contact" {% if active_public_page == 'contact' %}aria-current="page"{% endif %}>Contact</a>
       </nav>
       <div class="public-actions">
-        <a class="button ghost" href="{{ workspace_url }}">Open workspace</a>
+        <a class="button ghost" href="{{ workspace_url }}">Sign in</a>
         <a class="button" href="{{ app_install_url }}">Install app</a>
       </div>
     </header>

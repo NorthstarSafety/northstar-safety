@@ -12,14 +12,20 @@
       <p class="eyebrow">Triage queue</p>
       <h3>Open investigations by product and notice</h3>
     </div>
+    <form method="get" class="inline-actions">
+      <input type="hidden" name="status" value="{{ selected_status }}">
+      <input type="text" name="q" placeholder="Search product, owner, alert" value="{{ search }}">
+      <button class="button ghost" type="submit">Search</button>
+    </form>
     <div class="filters">
-      <a class="button {% if not selected_status %}ghost{% endif %}" href="/cases">All</a>
-      <a class="button {% if selected_status != 'action_needed' %}ghost{% endif %}" href="/cases?status=action_needed">Action needed</a>
-      <a class="button {% if selected_status != 'under_review' %}ghost{% endif %}" href="/cases?status=under_review">Under review</a>
-      <a class="button {% if selected_status != 'monitoring' %}ghost{% endif %}" href="/cases?status=monitoring">Monitoring</a>
-      <a class="button {% if selected_status != 'closed' %}ghost{% endif %}" href="/cases?status=closed">Closed</a>
+      <a class="button {% if not selected_status %}ghost{% endif %}" href="/cases{% if search %}?q={{ search }}{% endif %}">All</a>
+      <a class="button {% if selected_status != 'action_needed' %}ghost{% endif %}" href="/cases?status=action_needed{% if search %}&q={{ search }}{% endif %}">Action needed</a>
+      <a class="button {% if selected_status != 'under_review' %}ghost{% endif %}" href="/cases?status=under_review{% if search %}&q={{ search }}{% endif %}">Under review</a>
+      <a class="button {% if selected_status != 'monitoring' %}ghost{% endif %}" href="/cases?status=monitoring{% if search %}&q={{ search }}{% endif %}">Monitoring</a>
+      <a class="button {% if selected_status != 'closed' %}ghost{% endif %}" href="/cases?status=closed{% if search %}&q={{ search }}{% endif %}">Closed</a>
     </div>
   </div>
+  <p class="small muted" style="margin: 0 0 18px 0;">Use closed cases as proof of how your team handled earlier matches, not just as archive clutter.</p>
   <div class="table-shell">
     {% if case_rows %}
     <table>

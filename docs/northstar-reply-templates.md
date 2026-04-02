@@ -1,5 +1,44 @@
 # Northstar Reply Templates
 
+## No reply booking nudge
+
+Subject: Re: {{OriginalSubject}}
+
+Hi {{Name}},
+
+Quick follow-up from me.
+
+If {{PainAngle}} is still manual across inboxes, shared drives, or spreadsheets, I can show the live Northstar workflow in 15 minutes.
+
+I have:
+
+1. {{Option1}}
+2. {{Option2}}
+
+If one works, just reply 1 or 2 and I will send the invite.
+
+Omar Khatib
+Founder, Northstar Safety
+founder@northstarsafetyapp.com
+
+## Autoresponder wait-window follow-up
+
+Subject: Re: {{OriginalSubject}}
+
+Hi {{Name}},
+
+Following up now that your stated reply window has passed.
+
+If someone on your team owns product evidence, supplier documentation, or recall review, I would love to show the Northstar workflow in 15 minutes and let them decide quickly if it is relevant.
+
+I can do {{Option1}} or {{Option2}} Eastern.
+
+If another person is better for this, a quick redirect would help.
+
+Omar Khatib
+Founder, Northstar Safety
+founder@northstarsafetyapp.com
+
 ## Positive interest
 
 Subject: Re: {{OriginalSubject}}
@@ -37,6 +76,8 @@ Northstar is a private founding pilot for one Shopify store selling child produc
 - log investigations and decisions
 
 The pilot scope is one store and the first 10 priority SKUs. Pricing is `$300` one-time for the 30-day pilot.
+
+If the workflow proves itself, the optional continuation is `$149/month` for one store and up to 25 priority SKUs. That only starts if your team explicitly wants to continue.
 
 If useful, I can also show it live in 15 minutes.
 
@@ -159,11 +200,69 @@ The live pilot we discussed is:
 
 The next step is:
 
-1. confirm the internal owner
-2. connect the Shopify store
-3. provide the first evidence packet
+1. complete the $300 founding-pilot checkout
+2. confirm the internal owner
+3. connect the Shopify store
+4. provide the first evidence packet
 
-If you want to move forward, I can send the short pilot summary and kickoff the setup flow.
+If you want to move forward now, you can use the secure checkout link here:
+
+https://buy.stripe.com/14A9AU7Sl22v8TjcvL8ww00
+
+If your team prefers a Stripe invoice instead, reply and I will send that instead.
+
+Omar Khatib
+Founder, Northstar Safety
+founder@northstarsafetyapp.com
+
+## Pilot proved value / send continuation link
+
+Subject: Northstar Safety continuation
+
+Hi {{Name}},
+
+Thanks again for working through the pilot.
+
+Since the workflow is now live for your team, the simplest way to continue is the founding monthly plan here:
+
+https://buy.stripe.com/eVqbJ27SlgXpb1r0N38ww01
+
+That continuation keeps:
+
+- one Shopify store active
+- up to 25 priority SKUs in active scope
+- the evidence queue
+- official alert review
+- the existing case and action trail
+
+The founding continuation rate is `$149/month`, and it only starts because your team is explicitly choosing to continue after the pilot.
+
+If you need a Stripe invoice instead, reply and I will switch it over.
+
+Omar Khatib
+Founder, Northstar Safety
+founder@northstarsafetyapp.com
+
+## Ready to start / send payment link
+
+Subject: Northstar founding pilot checkout
+
+Hi {{Name}},
+
+Great. The fastest next step is to reserve the founding pilot here:
+
+https://buy.stripe.com/14A9AU7Sl22v8TjcvL8ww00
+
+The pilot is:
+
+- one Shopify store
+- first 10 priority SKUs
+- 30 days
+- $300 one-time
+
+As soon as payment is through, I will send kickoff options and the short setup checklist.
+
+If you need a Stripe invoice instead, reply and I will switch it over.
 
 Omar Khatib
 Founder, Northstar Safety

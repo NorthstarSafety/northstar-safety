@@ -65,7 +65,37 @@ Why this structure works:
 - narrow enough to stay software-led instead of turning into a services project
 - gives Northstar a real paid proof point without forcing a recurring commitment before the workflow is proven
 
-If the pilot works, continuation pricing is discussed before any longer-term rollout. There is no automatic monthly charge implied by the pilot offer.
+## Founding continuation if the pilot works
+
+If the pilot proves the workflow, Northstar offers a separate continuation plan:
+
+- **$149 per month**
+- one Shopify store
+- up to **25 priority SKUs** in active monthly scope
+- ongoing evidence tracking, official alert review, and case/action history
+
+Important rule:
+
+- there is **no automatic monthly charge**
+- continuation starts only after the merchant explicitly agrees to continue
+- the founder sends a separate recurring Stripe checkout link or Stripe invoice at that point
+
+## How payment works
+
+Default payment path:
+
+- secure Stripe checkout link: https://buy.stripe.com/14A9AU7Sl22v8TjcvL8ww00
+
+Fallback payment path:
+
+- send a Stripe invoice if the buyer asks for invoice-based approval
+
+Northstar should default to the live checkout link after a qualified yes because it keeps the close path fast and simple for a small team.
+
+If the pilot continues:
+
+- default to the live monthly continuation Stripe link: https://buy.stripe.com/eVqbJ27SlgXpb1r0N38ww01
+- use Stripe invoice only if the buyer wants monthly invoicing instead of card or bank checkout
 
 ## What is not included
 
