@@ -754,9 +754,9 @@ def launch_readiness_snapshot(connection) -> dict[str, Any]:
             "notes": (
                 "SMTP is ready for real delivery."
                 if smtp["configured"] and smtp["auth_enabled"]
-                else "SMTP relay is ready for real delivery without mailbox auth."
+                else f"SMTP relay is ready for real delivery without mailbox auth and will identify itself as {smtp['helo_domain']}."
                 if smtp["configured"]
-                else "SMTP is not configured yet. Set SMTP_HOST and SMTP_FROM_EMAIL, then either add SMTP_USERNAME and SMTP_PASSWORD for authenticated SMTP or leave both blank for an allowlisted relay."
+                else "SMTP is not configured yet. Set SMTP_HOST and SMTP_FROM_EMAIL, then either add SMTP_USERNAME and SMTP_PASSWORD for authenticated SMTP or set SMTP_AUTH_REQUIRED=false with an owned SMTP_HELO_DOMAIN for an allowlisted relay."
             ),
         },
         "billing": {

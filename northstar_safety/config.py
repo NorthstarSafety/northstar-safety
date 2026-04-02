@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from dataclasses import field
 from pathlib import Path
 from secrets import token_urlsafe
+from urllib.parse import urlparse
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,6 +30,18 @@ def _text(name: str, default: str = "") -> str:
 
 _configured_secret = _text("APP_SECRET_KEY")
 _runtime_secret = _configured_secret or token_urlsafe(32)
+
+
+def _default_smtp_helo_domain() -> str:
+    public_base_url = _text("PUBLIC_BASE_URL", "http://127.0.0.1:8000")
+    if not public_base_url:
+        return ""
+    try:
+        parsed = urlparse(public_base_url)
+    except ValueError:
+        return ""
+    host = (parsed.hostname or "").strip().rstrip(".")
+    return host
 
 
 @dataclass(frozen=True)
@@ -85,6 +98,8 @@ class Settings:
     smtp_port: int = int(os.getenv("SMTP_PORT", "587"))
     smtp_username: str = os.getenv("SMTP_USERNAME", "")
     smtp_password: str = os.getenv("SMTP_PASSWORD", "")
+    smtp_auth_required: bool = _flag("SMTP_AUTH_REQUIRED", bool(os.getenv("SMTP_USERNAME", "").strip()))
+    smtp_helo_domain: str = os.getenv("SMTP_HELO_DOMAIN", _default_smtp_helo_domain()).strip()
     smtp_from_email: str = os.getenv("SMTP_FROM_EMAIL", os.getenv("PUBLIC_SUPPORT_EMAIL", "support@northstarsafetyapp.com"))
     smtp_reply_to: str = os.getenv("SMTP_REPLY_TO", "")
     smtp_starttls: bool = _flag("SMTP_STARTTLS", True)

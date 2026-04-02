@@ -35,11 +35,17 @@
 - `SMTP_PORT`
   Purpose: SMTP port
 
+- `SMTP_AUTH_REQUIRED`
+  Purpose: switch between authenticated SMTP and relay-by-allowlist mode
+
 - `SMTP_USERNAME`
   Purpose: optional SMTP auth user for authenticated SMTP only
 
 - `SMTP_PASSWORD`
   Purpose: optional SMTP auth password for authenticated SMTP only
+
+- `SMTP_HELO_DOMAIN`
+  Purpose: owned domain Northstar presents in HELO or EHLO during SMTP relay
 
 - `SMTP_FROM_EMAIL`
   Purpose: sender address for operational mail
@@ -51,8 +57,12 @@ For Google Workspace SMTP relay:
 
 - use `SMTP_HOST=smtp-relay.gmail.com`
 - keep `SMTP_STARTTLS=true`
+- set `SMTP_AUTH_REQUIRED=false`
 - leave `SMTP_USERNAME` and `SMTP_PASSWORD` blank
+- set `SMTP_HELO_DOMAIN=app.northstarsafetyapp.com`
 - allowlist the host provider egress IPs in Google Workspace SMTP relay settings
+- make sure `SMTP_FROM_EMAIL` uses a mailbox or alias under the same Workspace-owned domain
+- Google relay still expects Northstar to present an owned domain in HELO or EHLO, not a generic Render hostname
 
 ## Shopify production secrets
 

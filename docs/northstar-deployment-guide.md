@@ -94,8 +94,10 @@ Suggested process:
 - `SHOPIFY_BILLING_REQUIRED=true`
 - `SMTP_MODE=smtp`
 - `SMTP_HOST`
+- `SMTP_AUTH_REQUIRED=false`
 - optional `SMTP_USERNAME`
 - optional `SMTP_PASSWORD`
+- `SMTP_HELO_DOMAIN=app.northstarsafetyapp.com`
 - `SMTP_FROM_EMAIL=support@your-domain`
 
 Google Workspace relay is a supported path:
@@ -103,8 +105,11 @@ Google Workspace relay is a supported path:
 - `SMTP_HOST=smtp-relay.gmail.com`
 - `SMTP_PORT=587`
 - `SMTP_STARTTLS=true`
+- `SMTP_AUTH_REQUIRED=false`
 - leave `SMTP_USERNAME` and `SMTP_PASSWORD` blank
+- `SMTP_HELO_DOMAIN=app.northstarsafetyapp.com`
 - allowlist the host egress IPs in Google Workspace SMTP relay
+- use a sender like `support@northstarsafetyapp.com` that belongs to the same Workspace-owned domain Northstar presents in HELO or EHLO
 
 Optional:
 

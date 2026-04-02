@@ -24,7 +24,7 @@ Date: 2026-03-30
 ## What was narrowed exactly
 
 - Postgres blocker: create the managed Render database and set `NORTHSTAR_DATABASE_URL`
-- SMTP blocker: set `SMTP_HOST`, `SMTP_PORT`, `SMTP_FROM_EMAIL`, and `SMTP_REPLY_TO`, then either add SMTP auth or allowlist Render egress IPs for Google relay
+- SMTP blocker: set `SMTP_HOST`, `SMTP_PORT`, `SMTP_AUTH_REQUIRED=false`, `SMTP_HELO_DOMAIN`, `SMTP_FROM_EMAIL`, and `SMTP_REPLY_TO`, then allowlist Render egress IPs for Google relay
 - Domain blocker: add `app.northstarsafetyapp.com` in Render first, then create the DNS record Render provides
 - Billing blocker: move the Shopify app into Shopify Partners before using `/billing/start`
 
@@ -38,10 +38,13 @@ Date: 2026-03-30
    - `SMTP_MODE=smtp`
    - `SMTP_HOST=smtp-relay.gmail.com`
    - `SMTP_PORT=587`
+   - `SMTP_AUTH_REQUIRED=false`
    - `SMTP_USERNAME=`
    - `SMTP_PASSWORD=`
+   - `SMTP_HELO_DOMAIN=app.northstarsafetyapp.com`
    - `SMTP_FROM_EMAIL=support@northstarsafetyapp.com`
-   - `SMTP_REPLY_TO=support@northstarsafetyapp.com`
+   - `SMTP_REPLY_TO=founder@northstarsafetyapp.com`
+   - make sure `support@northstarsafetyapp.com` is a real Workspace mailbox or alias under the Workspace-owned domain
 6. Add `app.northstarsafetyapp.com` as a custom domain in Render.
 7. Create the matching DNS record at the domain provider using the Render target.
 8. Update `PUBLIC_BASE_URL` to `https://app.northstarsafetyapp.com`.

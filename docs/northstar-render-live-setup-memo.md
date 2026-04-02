@@ -129,15 +129,18 @@ Because the remaining blockers are now provider-side rather than code-side, the 
    - `SMTP_MODE=smtp`
    - `SMTP_HOST=smtp-relay.gmail.com`
    - `SMTP_PORT=587`
+   - `SMTP_AUTH_REQUIRED=false`
    - `SMTP_USERNAME=`
    - `SMTP_PASSWORD=`
+   - `SMTP_HELO_DOMAIN=app.northstarsafetyapp.com`
    - `SMTP_FROM_EMAIL=support@northstarsafetyapp.com`
-   - `SMTP_REPLY_TO=support@northstarsafetyapp.com`
+   - `SMTP_REPLY_TO=founder@northstarsafetyapp.com`
    - `SMTP_STARTTLS=true`
    - Render egress IPs allowlisted in Google Workspace SMTP relay
 6. Redeploy again and use the Settings page test-email button.
 
 If Google Workspace relay is not working yet, the exact remaining blocker is: allowlist the Render outbound IPs inside Google Workspace SMTP relay settings.
+If Google still rejects relay after IP allowlisting, make sure Northstar is presenting `app.northstarsafetyapp.com` or another Workspace-owned hostname in HELO or EHLO and that `support@northstarsafetyapp.com` is a real Workspace mailbox or alias.
 
 ## Important live note
 
@@ -149,6 +152,8 @@ The hosted Render app is now serving the newer runtime behavior with relative st
 2. If any SQLite state still matters, run `scripts/northstar_migrate_to_postgres.py` during the cutover.
 3. Add SMTP credentials:
    - `SMTP_HOST`
+   - `SMTP_AUTH_REQUIRED`
+   - `SMTP_HELO_DOMAIN`
    - `SMTP_FROM_EMAIL`
    - optional `SMTP_USERNAME`
    - optional `SMTP_PASSWORD`
