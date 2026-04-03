@@ -268,7 +268,8 @@ class DatabaseConnection:
     def execute(self, query: str, params=None):
         params = params or ()
         if self.backend == "postgres":
-            return self.raw_connection.execute(_translate_qmark_sql(query), params)
+            translated_query = _translate_postgres_sql(query, params)
+            return self.raw_connection.execute(translated_query, params)
         return self.raw_connection.execute(query, params)
 
     def executescript(self, script: str) -> None:
@@ -312,6 +313,43 @@ def _translate_qmark_sql(query: str) -> str:
             translated.append(char)
         previous = char
     return "".join(translated)
+
+
+def _translate_named_sql(query: str) -> str:
+    translated: list[str] = []
+    in_string = False
+    previous = ""
+    index = 0
+    length = len(query)
+    while index < length:
+        char = query[index]
+        if char == "'" and previous != "\\":
+            in_string = not in_string
+        if (
+            char == ":"
+            and not in_string
+            and index + 1 < length
+            and (query[index + 1].isalpha() or query[index + 1] == "_")
+            and previous != ":"
+        ):
+            end = index + 2
+            while end < length and (query[end].isalnum() or query[end] == "_"):
+                end += 1
+            name = query[index + 1 : end]
+            translated.append(f"%({name})s")
+            previous = query[end - 1]
+            index = end
+            continue
+        translated.append(char)
+        previous = char
+        index += 1
+    return "".join(translated)
+
+
+def _translate_postgres_sql(query: str, params) -> str:
+    if isinstance(params, dict):
+        return _translate_named_sql(query)
+    return _translate_qmark_sql(query)
 
 
 def _split_sql_statements(script: str) -> list[str]:
